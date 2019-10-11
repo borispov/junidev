@@ -1,0 +1,46 @@
+{
+  "name": "junidev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "webpack-dev-server --no-inline",
+    "webpack:build": "webpack --build",
+    "webpack:watch": "npx webpack --watch",
+    "cpu:profile": "node --prof-process isolate-0xnnnnnnnnnnnn-v8.log > processed.txt",
+    "test": "find ./src -name '*.test.js' | xargs mocha -R spec"
+  },
+  "keywords": [],
+  "author": "Boris Povolotsky <boristofu@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "@material-ui/core": "^4.4.3",
+    "bunyan": "^1.8.12",
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "joi": "^14.3.1",
+    "mongoose": "^5.7.3",
+    "morgan": "^1.9.1",
+    "puppeteer": "^1.20.0",
+    "react": "^16.10.1",
+    "react-dom": "^16.10.1",
+    "react-router-dom": "^5.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.2",
+    "@babel/core": "^7.6.2",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^6.2.1",
+    "nodemon": "^1.19.3",
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.1"
+  }
+}
