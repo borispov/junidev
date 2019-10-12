@@ -3,14 +3,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const logger = require('./utils/logger');
 const mongoose = require('mongoose')
+const path = require('path');
+const exphbs = require('express-handlebars');
 
 const {errorHandler} = require('./utils/errorHandler');
 const jobRoutes = require('./components/jobs/jobs.routes');
-
-
-mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('connected'))
-  .catch(() => 'Failed')
 
 const app = express();
 
@@ -23,8 +20,14 @@ process.on('uncaughtException', (error)  => {
 process.on('unhandledRejection', (error, promise) => {
   console.log(' Oh Lord! We forgot to handle a promise rejection here: ', promise);
   console.log(' The error was: ', error );
-  logger.info('Unhandled Promise', error)
+  logger.info('Unhandled Promise', error);
 });
+
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+
+app.set('views', path.join(__dirname, '..', 'views'));
+app.engine('.hbs', exphbs({ defaultLayout: 'main', extname: '.hbs'}));
+app.set('view engine', '.hbs');
 
 app.enable('trust proxy');
 app.disable('x-powered-by');
@@ -44,5 +47,11 @@ app.use(async (err, req, res, next) => {
   errorHandler(err, req, res);
   next();
 });
+
+app.get('/', (req,res) => {
+  res.render('home', {
+    content: "My Content"
+  })
+})
 
 module.exports = app;
