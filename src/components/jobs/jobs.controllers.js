@@ -63,41 +63,57 @@ const postJob = async (req, res, next) => {
 const getJobs = async (req, res, next) => {
 
   try {
-
     const jobs = await jobService.getJobs()
+
     if (!jobs.length) {
       return res.status(404).json({ message: "404, NO JOBS FOUND", body: null })
     }
+
     console.log(jobs.length + ' jobs has been found')
-    return res.status(200).json({ message: "Success", body: jobs })
+    return res.status(200).json({ body: jobs })
   } catch(err) {
     next(err);
     return res.status(404).json({ message: "DB is unavailable at the moment" })
   }
-
 }
 
 const getJob = async (req, res, next) => {
 
   const { id } = req.params
 
-  const [requestedJob, err] = await jobService.getJob(id)
+  try {
 
-  if (err) {
-    const error = new AppError("mongoDB findOne", "AppError", err.msg, true);
-    next(error);
-    return;
+    const requestedJob = await jobService.getJob(id)
+
+    if (err) {
+      const error = new AppError("mongoDB findOne", "AppError", err.msg, true);
+      next(error);
+      return;
+    }
+
+    return requestedJob
+  } catch(err) {
+    return next(err);
   }
 
-  return requestedJob
 }
 
 const scrapeAndSaveSO = async (req, res, next) => {
+
+  const localhosts = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  if (!localhosts.includes(ip)) {
+    logger.info("A Request Came From Unauthorized Source.")
+    return;
+  }
+
   try {
     return await jobService.getStackOverflowJobs();
   } catch(e) {
     next(e);
   }
+
 }
 
 

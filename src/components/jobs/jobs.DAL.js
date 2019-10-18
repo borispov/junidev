@@ -20,9 +20,13 @@ const addJob = async ({ title, href, company, stack, description, salary, joinDa
 
 }
 
-const addJobs = async (jobs) => await JobModel.insertMany(jobs);
+const addJobs = (jobs) => {
+  console.log('inside jobsDAL')
+  console.log('recevied jobs: ', jobs.length)
+  return JobModel.insertMany(jobs);
+}
 
-const getJobs = async () => await JobModel.find({});
+const getJobs = async () => await JobModel.find({}).sort({joinDate: -1});
 
 const deleteJob = async no => await JobModel.findOneAndRemove({jobID: no})
 

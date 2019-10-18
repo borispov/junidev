@@ -47,5 +47,6 @@ ScrapeError.prototype = Object.create(Error.prototype);
 
 module.exports = {
   AppError,
-  errorHandler
+  errorHandler,
+  ScrapeError
 }

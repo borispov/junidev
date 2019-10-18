@@ -1,0 +1,33 @@
+@import 'style.css';
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header__title {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.title__underline {
+  transform: translateX(-50%) skew(-50deg, -2deg);
+  bottom: 15%;
+  left: 50%;
+  position: absolute;
+  height: 8px;
+  width: 25%;
+  z-index: -1;
+  background: linear-gradient(-75deg, red 10%, orange 90%);
+  border-radius: 12px;
+}
+
+.tags {
+  color: #0f1115;
+}
+
+.cta {
+  transition: all 0.1s ease-in-out;
+}

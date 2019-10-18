@@ -1,45 +1,53 @@
 const path = require('path');
+const imageminMozjpeg = require('imagemin-mozjpeg');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ImageminPlugin = require('imagemin-webpack-plugin').default;
 
-const Config = (entry, name, target, path) => {
+const Config = (entry, name, target, dest) => {
   return {
     entry,
-    target,
-    mode: "development",
+    target: 'node',
+    node: {
+      __dirname: false,
+      __filename: false,
+    },
+    mode: 'development',
+    plugins: [
+      new CopyWebpackPlugin([{
+        from: path.resolve(__dirname, 'src', 'public', 'img', '**'),
+        to: path.resolve(__dirname, 'dist', 'public', 'img'),
+        flatten: true
+      }]),
+        new ImageminPlugin({
+          pngquant: ({quality: [0.5, 0.5]}),
+          plugins: [imageminMozjpeg({quality: 75})]
+        })
+    ],
     module: {
       rules: [
         {
           test: /\.js?/,
           exclude: /node_modules/,
-          loader: "babel-loader",
-          options: {
-            presets: ["@babel/react"],
-          },
-        },
-        {
-          test: /\.svg$/,
-          loader: "svg-inline-loader"
+          loader: ["babel-loader"]
         }
       ],
     },
+    // resolve: {
+    //   alias: {
+    //     'handlebars': 'handlebars/dist/handlebars.min.js',
+    //     'hbs': 'handlebars/dist/handlebars.min.js'
+    //   }
+    // },
     output: {
-      path,
+      path: dest,
       filename: `${name}.js`,
       publicPath: '/'
-    },
-    // devServer: {
-    //   contentBase: path.join(__dirname, 'dist'),
-    //   compress: true,
-    //   port: 9000
-    // }
+    }
   }
 }
 
-const clientEntry = path.resolve(__dirname, "views", "app.js");
-const clientPath = path.resolve(__dirname, "dist");
-const clientConfig = Config(clientEntry, "app", "web", clientPath);
-
 const serverEntry = path.resolve(__dirname, "server.js");
-const serverPath = __dirname;
+const serverPath = path.resolve(__dirname, "dist");
 const serverConfig = Config(serverEntry, "bundled_server", "node", serverPath);
 
-module.exports = [serverConfig, clientConfig]
+module.exports = [serverConfig]

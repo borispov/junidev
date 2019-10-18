@@ -1,7 +1,7 @@
 const { JobDAL } = require('./jobs.DAL');
 const logger = require('../../utils/logger');
 
-const StackOverflow = require('../../sources/stackoverflow');
+const StackOverflow = require('../scrapers/stackoverflow');
 const stackOverflow = new StackOverflow();
 
 
@@ -27,9 +27,9 @@ module.exports = class JobService {
     console.log(`adding ${jobCount} jobs....`)
 
     try {
-      const jobs = await JobDAL.addJobs(jobs);
+      const jobsAdded = await JobDAL.addJobs(jobs);
       logger.info(`Added ${jobCount} jobs to database.`);
-      return jobs;
+      return jobsAdded;
     } catch(e) {
       logger.debug("error adding bunch of jobs: ", e);
       return e;
@@ -41,9 +41,11 @@ module.exports = class JobService {
   getStackOverflowJobs = async () => {
     logger.info(`FROM JOB_SERVICE :: Activating Stackoverflow Scraper`);
     const jobs = await stackOverflow.getJobs();
-    logger.info(`  Received a batch of: ${jobs.length} jobs.  `);
-    logger.info(`  Sending parsed data to the DATABASE  `);
-    return await addJobsToDB(jobs)
+
+    console.log('my jobsssssssssss : ', jobs)
+    // logger.info(`  Received a batch of: ${jobs.length} jobs.  `);
+    // logger.info(`  Sending parsed data to the DATABASE  `);
+    return await this.addJobsToDB(jobs)
   }
 
 }

@@ -16,6 +16,6 @@ Router.post('/jobs/postjob', jobController.postJob);
 
 // Apply. -- should this be a route.. perhaps for.. tracking and analysis? 
 
-Router.post('/jobs/postJobs', jobController.scrapeAndSaveSO);
+Router.get('/private/getSO', jobController.scrapeAndSaveSO);
 
 module.exports = Router;

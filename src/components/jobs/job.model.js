@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-require('dotenv').config();
-
-// For testing JOBDAL.js
-// mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log('connected'))
-//   .catch(() => 'Failed')
 
 const JobSchema = new Schema({
   jobID: {
@@ -40,6 +34,10 @@ const JobSchema = new Schema({
 
   salary: {
     type: String,
+  },
+
+  logo: {
+    type: String
   },
 
   joinDate: {

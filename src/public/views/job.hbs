@@ -1,0 +1,43 @@
+<body class="m-0 p-0 bg-gray-400 text-white">
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+
+  <h1 class="text-gray-800 text-center text-3xl">Latest Jobs</h1>
+  <div class="container max-w-xl bg-gray-500 mx-auto rounded-sm">
+    <hr/>
+      <div class="flex flex-col flex-wrap items-center content-center">
+
+        {{#if job}}
+        {{>jobcard}}
+
+        <hr />
+
+        <div class="flex flex-row flex-wrap content-start px-8">
+
+          <img src="{{job.logo}}" alt="{{job.company}}'s logo" />
+          <div>
+            <h2 class="text-xl">{{job.title}}</h2>
+            <h3 class="font-bold text-md">About {{job.company}}:</h3>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold italic">Job Description:</h3>
+          {{job.description}}
+        </div>
+
+        <a href="{{job.href}}">
+          <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">
+            Apply
+          </button>
+        </a>
+
+        {{/if}}
+
+      </div>
+    </div>
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->

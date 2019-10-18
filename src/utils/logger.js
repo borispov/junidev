@@ -1,7 +1,11 @@
 const path = require('path');
 const bunyan = require('bunyan');
 
-const logPath = logname => path.join(__dirname, '..', '..', 'logs', `${logname}.log`);
+// const logPath = logname => path.join(__dirname, '..', '..', 'logs', `${logname}.log`);
+const logPath = logname => process.cwd() + `/logs/${logname}.log`;
+console.log(
+  logPath('appError')
+)
 
 const logger = bunyan.createLogger({
     name: "express-bunyan-log",
@@ -14,8 +18,8 @@ const logger = bunyan.createLogger({
         {
             type: 'rotating-file',
             level: 'error',
-            // path: logPath('appError'),
-            path: './logs/appError.log',
+            path: logPath('appError'),
+            // path: './logs/appError.log',
             period: '1d',
             count: 2
         }
