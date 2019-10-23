@@ -2,13 +2,8 @@ const puppeteer = require('puppeteer');
 const logger = require('../../utils/logger');
 const { ScrapeError } = require('../../utils/errorHandler');
 
-const getText = element => element.textContent
-const getLink = element => element['href']
-const toArr = node => [...node]
-
 const isEq = n1 => n2 => n1 === n2;
 const isSameJob = url1 => url2 => isEq(jobId(url1))(jobId(url2));
-const jobId = url => url.split('/').reduce((a,c,i,s) => c === 'jobs' ? s[i+1] : a);
 
 /*
  * Stackoverflow class.
@@ -39,7 +34,23 @@ class StackOverflow {
   }
 
 
+  // need to export out COMMON functionaity for other robots.
   _isDupURL = list => url => list.reduce((a,c) => isSameJob(c)(url) ? true : a, false)
+
+  _isHours = str => str.replace(/\d/g,"") === 'h'
+
+  _parseDate = x =>  {
+    const currentDate = new Date();
+    let format = x.split(' ')[0];
+    let num = format.replace(/\D/g,"");
+    let timeFormat = format.replace(/\d/g,"");
+
+    return this._isHours(timeFormat) 
+      ? currentDate
+      : new Date(currentDate.setDate(currentDate.getDate() - num))
+  }
+
+
 
   getJobs = async (location = '', stack = '', data) => {
     this.data = data || [];
@@ -71,6 +82,9 @@ class StackOverflow {
 
   }
 
+
+
+
   _extractResults = async (page) => {
     const jobLinks = await this._getLinks(page);
     let arrayOfJobs = [];
@@ -95,18 +109,6 @@ class StackOverflow {
     return arrayOfJobs;
   }
 
-  _isHours = str => str.replace(/\d/g,"") === 'h'
-
-  _parseDate = x =>  {
-    const currentDate = new Date();
-    let format = x.split(' ')[0];
-    let num = format.replace(/\D/g,"");
-    let timeFormat = format.replace(/\d/g,"");
-
-    return this._isHours(timeFormat) 
-      ? currentDate
-      : new Date(currentDate.setDate(currentDate.getDate() - num))
-  }
 
   _getLinks = async (page) => {
     const selector = ".-job-summary";
@@ -155,22 +157,31 @@ class StackOverflow {
           .parentElement.lastElementChild.children]
           .map(el => el.textContent)
 
-    const description = subheadings.find(el => el.textContent === 'Job description').parentElement.lastElementChild.textContent;
+    const description = subheadings.find(el => el.textContent === 'Job description').parentElement.lastElementChild.innerHTML;
+    const aboutElement = document.querySelector('.-about-company .description');
+    const about = aboutElement && aboutElement.innerHTML;
     const salaryElement = document.querySelector('.-salary');
     const salary = salaryElement && salaryElement.offsetParent.className === 'container' ? salaryElement.textContent : null;
-    const title = document.querySelector('.fs-headline1').innerText;
+    const title = document.querySelector('.fs-headline1').innerText.split('(m/f/d)');
     const logo = document.querySelector('.s-avatar.s-avatar__lg img')['src'];
     const href = url
-    const jobID = _jobId(href);
+    const SOID = _jobId(href);
+
+    // const companyEl = document.querySelector('.-life-at-company h2');
+    const companyEl = document.querySelector('.job-details--header .fc-black-700 a')
+    // const company = companyEl && companyEl['textContent'].split(' ').slice(-1)[0];
+    const company = companyEl && companyEl['textContent']
 
     return {
       title,
-      jobID,
+      SOID,
       href,
       applyLink,
       stack: techStack,
       description,
       salary,
+      about,
+      company,
       logo
     };
   }, page.url());

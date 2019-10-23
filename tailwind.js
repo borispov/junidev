@@ -1,6 +1,9 @@
 module.exports = {
   theme: {
     extend: {
+      zIndex: {
+        'neg1': '-1'
+      },
       minWidth: {
         '1/4': '25%',
         '1/2': '50%',

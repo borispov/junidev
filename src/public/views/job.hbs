@@ -1,43 +1,37 @@
-<body class="m-0 p-0 bg-gray-400 text-white">
+<body class="m-0 p-0 bg-gray-200 text-white">
 
   <!-- Primary Page Layout
+
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-  <h1 class="text-gray-800 text-center text-3xl">Latest Jobs</h1>
-  <div class="container max-w-xl bg-gray-500 mx-auto rounded-sm">
-    <hr/>
-      <div class="flex flex-col flex-wrap items-center content-center">
+  <h1 class="text-gray-800 text-center text-3xl">{{job.title}}</h1>
+  <br>
+  <div class="container text-gray-800 lg:max-w-2xl max-w-xl bg-gray-100 mx-auto rounded-sm mb-16">
 
-        {{#if job}}
-        {{>jobcard}}
+    <div class="flex flex-col flex-wrap items-center content-center">
 
-        <hr />
-
-        <div class="flex flex-row flex-wrap content-start px-8">
-
-          <img src="{{job.logo}}" alt="{{job.company}}'s logo" />
-          <div>
-            <h2 class="text-xl">{{job.title}}</h2>
-            <h3 class="font-bold text-md">About {{job.company}}:</h3>
-          </div>
-        </div>
-
-        <div>
-          <h3 class="font-bold italic">Job Description:</h3>
-          {{job.description}}
-        </div>
-
-        <a href="{{job.href}}">
-          <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">
-            Apply
-          </button>
-        </a>
-
-        {{/if}}
-
+      <div class="px-8 mt-2 rounded">
+        <img src="{{job.logo}}" alt="{{job.company}}'s logo" />
       </div>
+      <br>
+
+      <div class="job__desc leading-normal pl-2">
+        <h3 class="text-center font-semibold text-2xl italic">Job Description:</h3>
+        <p class="pl-1 mt-4">
+        {{{job.description}}}
+        </p>
+
+        <h3 class="mt-6">Information about Our Company: {{job.company}}</h3>
+        {{{job.about}}}
+      </div>
+
+      <!-- <a href="{{job.href}}"> -->
+      <a href="/job/{{job.jobID}}/apply" target="_new" rel="nofollow" class="bg-red-500 hover:bg-red-600 text-gray-900 hover:text-gray-100 shadow-lg font-bold py-2 px-8 mb-6 rounded-full">
+          Apply
+      </a>
+
     </div>
   </div>
-
+</body>
 <!-- End Document
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->

@@ -4,6 +4,9 @@ const logger = require('../../utils/logger');
 const StackOverflow = require('../scrapers/stackoverflow');
 const stackOverflow = new StackOverflow();
 
+const Indeed = require('../scrapers/indeed');
+const indeed = new Indeed();
+
 
 /* TODO:
  * ADD a notifications Service.
@@ -38,14 +41,24 @@ module.exports = class JobService {
 
   _notifyUsers = () => "SomeMethodOfNotifications_here";
 
+  getIndeedJobs = async () => {
+    logger.info(`FROM JOB_SERVICE:: Activating __Indeed__ Scraper`);
+    const jobs = await indeed.getJobs();
+
+    console.log('my jobs: ', jobs.length);
+    return await this.addJobsToDB(jobs);
+  }
+
   getStackOverflowJobs = async () => {
-    logger.info(`FROM JOB_SERVICE :: Activating Stackoverflow Scraper`);
+    logger.info(`FROM JOB_SERVICE :: Activating __Stackoverflow__ Scraper`);
     const jobs = await stackOverflow.getJobs();
 
     console.log('my jobsssssssssss : ', jobs)
     // logger.info(`  Received a batch of: ${jobs.length} jobs.  `);
     // logger.info(`  Sending parsed data to the DATABASE  `);
     return await this.addJobsToDB(jobs)
-  }
+  };
+
+  deleteAll = async () => await JobDAL.deleteAll();
 
 }

@@ -8,6 +8,7 @@ const exphbs = require('express-handlebars');
 const { errorHandler } = require('./utils/errorHandler');
 const jobRoutes = require('./components/jobs/jobs.routes');
 const viewRoutes = require('./components/views/views.routes');
+const userRoutes = require('./components/users/users.routes');
 
 const app = express();
 
@@ -22,9 +23,6 @@ process.on('unhandledRejection', (error, promise) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public' )));
-
-console.log(path.resolve(__dirname))
-
 app.set('views', path.join(__dirname, 'public', 'views'));
 app.engine('.hbs', exphbs({ 
   defaultLayout: 'main', 
@@ -42,11 +40,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/api', jobRoutes);
-app.use('/', viewRoutes);
-
-// endpoints for testing .. ??
-app.get('/status', (req, res) => { res.status(200).end() });
-app.head('/status', (req, res) => { res.status(200).end(); });
+app.use('/', viewRoutes, userRoutes);
 
 app.use(async (err, req, res, next) => {
   errorHandler(err, req, res);
@@ -54,7 +48,7 @@ app.use(async (err, req, res, next) => {
 });
 
 app.use('*', (req,res,next) => {
-  res.status(404).render('404');
+  res.status(404).render('404', {link: "/", layout: '404.hbs'});
 })
 
 module.exports = app;

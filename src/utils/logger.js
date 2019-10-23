@@ -3,9 +3,6 @@ const bunyan = require('bunyan');
 
 // const logPath = logname => path.join(__dirname, '..', '..', 'logs', `${logname}.log`);
 const logPath = logname => process.cwd() + `/logs/${logname}.log`;
-console.log(
-  logPath('appError')
-)
 
 const logger = bunyan.createLogger({
     name: "express-bunyan-log",

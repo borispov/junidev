@@ -116,8 +116,37 @@ const scrapeAndSaveSO = async (req, res, next) => {
 
 }
 
+const scrapeAndSaveIndeed = async (req, res, next) => {
+
+  const localhosts = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  if (!localhosts.includes(ip)) {
+    logger.info("A Request Came From Unauthorized Source.")
+    return;
+  }
+
+  try {
+    return await jobService.getIndeedJobs();
+  } catch(e) {
+    next(e);
+  }
+
+}
+
+const purge = async (req,res,next) => {
+
+  try {
+    await jobService.deleteAll();
+    console.log('purged db...')
+  } catch(e) {
+    next(e);
+    return
+  }
+}
+
 
 
 module.exports.jobController = {
-  getJob, getJobs, postJob, scrapeAndSaveSO
+  getJob, getJobs, postJob, scrapeAndSaveSO, purge, scrapeAndSaveIndeed
 }

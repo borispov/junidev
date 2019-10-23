@@ -18,4 +18,8 @@ Router.post('/jobs/postjob', jobController.postJob);
 
 Router.get('/private/getSO', jobController.scrapeAndSaveSO);
 
+Router.get('/private/getIndeed', jobController.scrapeAndSaveIndeed)
+
+Router.get('/private/purge', jobController.purge);
+
 module.exports = Router;

@@ -31,3 +31,24 @@ body {
 .cta {
   transition: all 0.1s ease-in-out;
 }
+
+.job__desc p {
+  margin-bottom: 0em;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.job__desc strong {
+  margin-top: 1em;
+  font-weight: 600;
+}
+
+.job__desc ul, ol {
+  margin-bottom: 13px;
+  margin-left: 26px;
+}
+
+
+.job__desc {
+  background: black !important;
+}

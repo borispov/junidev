@@ -9,5 +9,28 @@ module.exports = {
     const diff = today - comparedTime;
     const d = diff / (1000 * 3600 * 24);
     return ~~d > 0 ? `${~~d}d ago` : 'Today'
-  }
+  },
+
+  logoLetter: function(x) {
+    const ls = x.split(' ');
+    return x.length < 2
+      ? (ls[0][0] + ls[1][0]).toUpperCase()
+      : (x[0] + x[1]).toUpperCase();
+  },
+
+  submitted: function(msg,val, options) {
+    return msg === val
+      ? options.fn(this)
+      : options.inverse(this);
+  },
+
+  showStack: function(arr) {
+    return arr.filter(x => x.length < 11);
+  },
+
+  // parseSoText: function(x) {
+  //   const raw = x;
+  //
+  //   const splitByColons = raw.split(':')
+  // }
 };

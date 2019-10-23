@@ -10,10 +10,6 @@ const port = process.env.PORT || 3000;
 const isDevMode = process.env.NODE_ENV === 'development' || false;
 const isProdMode = process.env.NODE_ENV === 'production' || false;
 
-console.log(`NODE env is ... ${isProdMode ? 'production' : 'development'}`)
-
-console.log('Hello World')
-
 mongoose
   .connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MONGODB: Connected"))

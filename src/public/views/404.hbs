@@ -4,17 +4,25 @@
   <!-- Primary Page Layout
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 
-  <div class="mx-auto w-screen sm:w-64 rounded bg-orange-200 h-auto">
+  <div class="absolute top-0 w-screen h-screen m-0 p-0 z-neg1 bg-red-800">
+    <img class="w-full h-full bg-center object-fit opacity-25" src="/img/404.jpg" alt="Page Not Found Error Image">
+  </div>
 
-    <h1 class="text-center text-lg font-bold py-4">
-      Sorry, Page Does Not Exist!
-    </h1>
-    <h5 class="text-center text-base text-gray-900 font-thin mt-4 px-4">
-      You were trying probably trying to access a wrong URL
-    </h5>
-    <a class="italic text-indigo-700" href={{link}}>
-      Go Back
-    </a>
+  <div class="mx-auto w-screen sm:w-auto rounded bg-orange-200 h-screen sm:h-full sm:mt-64 p-6 z-10">
+
+      <h1 class="text-center text-lg text-gray-900 font-bold py-4 sm:pt-0 pt-64">
+        Sorry, Page Does Not Exist!
+      </h1>
+      <h5 class="text-center text-base text-gray-900 font-thin mt-4 px-4">
+        {{#if message}}
+          {{message}}
+        {{else}}
+          You were probably trying to access a wrong URL
+        {{/if}}
+      </h5>
+      <a class="py-2 block text-center italic text-indigo-700" href={{link}}>
+        Go Back
+      </a>
 
   </div>
 

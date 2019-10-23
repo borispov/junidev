@@ -1,37 +1,50 @@
-<div class="jobcard bg-gray-200 items-center flex my-2 sm:flex-wrap flex-nowrap justify-between border-b border-indigo-500">
+<div class="jobcard bg-gray-200 items-center flex my-2 sm:flex-wrap flex-nowrap justify-between border-indigo-500 rounded shadow-lg">
 
   <div class="flex md:max-w-md max-w-sm min-w-1/4 lg:min-w-1/2">
 
-    <div class="job__logo flex-shrink-0 pl-2">
-      <a href="/jobs/{{this.jobID}}">
-        <img class="h-16 w-16 m-auto mr-4 rounded" src="{{this.logo}}" alt="{{this.company}}">
+    <div class="flex-shrink-0 pl-2 align-middle my-auto">
+      <a href="/job/{{this.jobID}}">
+        {{#if this.logo}}
+          <img class="h-16 w-16 m-auto mr-4 rounded" src="{{this.logo}}" alt="{{this.company}}">
+        {{else}}
+          <p class="font-thin text-3xl text-gray-600 text-center align-bottom rounded bg-gray-400 h-16 w-16 mr-4 pt-2 opacity-50 italic">
+          {{#logoLetter this.company}}
+          </p>
+          {{/logoLetter}}
+        {{/if}}
       </a>
     </div>
 
     <!-- Company name, Job Title, Location -->
-    <div class="flex items-start flex-col sm:h-20 h-auto sm:justify-around justify-start min-w-10 max-w-md">
-      <a href="/jobs/{{this.jobID}}">
-        <h4 class="text-indigo-500 font-bold sm:text-base text-sm leading-snug max-w-sm">{{this.title}}</h4>
+    <div class="flex items-start flex-col h-auto sm:justify-around justify-start min-w-10 max-w-md my-2">
+      <a href="/job/{{this.jobID}}">
+        <h4 class="text-indigo-500 font-semibold sm:text-base text-sm leading-snug max-w-sm">{{this.title}}</h4>
       </a>
-      <a href="/jobs/{{this.jobID}}">
-        <h5 class="text-gray-700 font-normal text-md">{{this.company}}Intel | <span class="text-sm text-gray-400">src: {{this.src}}</span></h4>
+      <a href="/job/{{this.jobID}}">
+        <h5 class="text-gray-700 font-normal text-md">{{this.company}} <br>
+          <span class="text-sm text-gray-800 italic font-light tracking-wide min-w-lg mt-4">
+            {{#if this.stack}}
+            {{#showStack this.stack}}
+            {{/showStack}}
+            {{/if}}
+          </span>
+        </h5>
       </a>
     </div>
 
   </div>
 
-  <div class="tags hidden md:flex justify-end flex-wrap leading-tight w-1/4">
-    {{#each this.stack}}
-      {{#lessThan this.length 10}}
-      <span class="cursor-default border rounded border-black py-1 px-2 font-normal text-md rounded text-indigo-700 m-1">{{this}}</span>
-      {{/lessThan}}
-    {{/each}}
-  </div>
+  <!--  -->
 
   <!-- <span class="sm:hidden text&#45;gray&#45;900"> | </span> -->
-  <p class="sm:mr-10 mr-2 w-auto text-gray-600">
-    {{#timeAgo this.joinDate}}
-    {{/timeAgo}}
-  </p>
+  <div>
+    <p class="sm:mr-10 mr-2 w-auto text-gray-600 inline">
+      {{this.location}}
+    </p>
+    <p class="sm:mr-10 mr-2 w-auto text-gray-600 inline">
+      {{#timeAgo this.joinDate}}
+      {{/timeAgo}}
+    </p>
+  </div>
 
 </div>
