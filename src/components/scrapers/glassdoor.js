@@ -37,8 +37,8 @@ class Glassdoor {
       // Job Done, close everything & get the hell out!
       await page.close();
       await browser.close();
-      // console.log('FINISHED, received number of jobs: ', jobs.length)
-      // return jobs;
+      console.log('FINISHED, received number of jobs: ', jobs.length)
+      return jobs;
     } catch(e) {
       console.log(e);
     }}
@@ -82,8 +82,8 @@ class Glassdoor {
 
       await page.goto(link.href);
       // this._checkModal(page);
-      const description = await page.$eval('jobDescriptionContent desc', el => el.lastElementChild.innerHTML);
-      const logo = await page.$eval('.logo .cell img')['src'];
+      const description = await page.$eval('.jobDescriptionContent.desc', el => el.lastElementChild.innerHTML);
+      const logo = await page.$eval('.logo.cell img', el => el.src);
       const jobObject = {
         ...link,
         description,
@@ -91,9 +91,7 @@ class Glassdoor {
       }
       arrayOfJobs.push(jobObject);
     }
-
-    console.log(arrayOfJobs)
-    // return arrayOfJobs;
+    return arrayOfJobs;
   }
 
   _checkModal = async page => {
