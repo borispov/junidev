@@ -4,6 +4,7 @@ const { ScrapeError } = require('../../utils/errorHandler');
 
 const isEq = n1 => n2 => n1 === n2;
 const isSameJob = url1 => url2 => isEq(jobId(url1))(jobId(url2));
+const cc = a => (...arrs) => a.concat(...arrs);
 
 /*
  * Stackoverflow class.
@@ -67,7 +68,8 @@ class StackOverflow {
     const page = await browser.newPage();
 
     try {
-      await page.goto(this._getURL(location, stack));
+      this.searchURL = this._getURL(location, stack);
+      await page.goto(this.searchURL);
       logger.info(`Worker Visited: ${this._getURL(location, stack)}`)
       const jobs = await this._extractResults(page);
       await browser.close();
@@ -86,7 +88,19 @@ class StackOverflow {
 
 
   _extractResults = async (page) => {
-    const jobLinks = await this._getLinks(page);
+
+    // get Page 1 links
+    const jobLinksPageOne = await this._getLinks(page);
+
+    //get Page 2 Links
+    await page.goto(this._getPage(2));
+    const jobLinksPageTwo = await this._getLinks(page);
+
+    await page.goto(this._getPage(3));
+    const jobLinksPageThree = await this._getLinks(page);
+
+    const jobLinks = cc([])(jobLinksPageOne, jobLinksPageTwo, jobLinksPageThree);
+
     let arrayOfJobs = [];
 
     for (const link of jobLinks) {
@@ -120,7 +134,7 @@ class StackOverflow {
         const href = element.querySelector('[href]')['href']
         const date = element.querySelector('.-title span.r0 .fc-black-500')['textContent']
         return { href, date }
-      }))
+    }))
       
       // .filter(url => this._isDupURL(this.data)(url))
       // .filter(url => self._isDupURL(self.data)(url)))
@@ -135,7 +149,7 @@ class StackOverflow {
 
       this._isHours(date) 
         ? links.push(link)
-        : date.replace(/\D/g, "") < 14
+        : date.replace(/\D/g, "") < 18
           ? links.push(o)
           : null
     };
@@ -162,7 +176,7 @@ class StackOverflow {
     const about = aboutElement && aboutElement.innerHTML;
     const salaryElement = document.querySelector('.-salary');
     const salary = salaryElement && salaryElement.offsetParent.className === 'container' ? salaryElement.textContent : null;
-    const title = document.querySelector('.fs-headline1').innerText.split('(m/f/d)');
+    const title = document.querySelector('.fs-headline1').innerText.split('(m/f/d)')[0];
     const logo = document.querySelector('.s-avatar.s-avatar__lg img')['src'];
     const href = url
     const SOID = _jobId(href);
@@ -185,6 +199,8 @@ class StackOverflow {
       logo
     };
   }, page.url());
+
+  _getPage = n => this.searchURL + `pg=${n}`;
 
   _getURL = (location, stack) => {
     return `${defaultURL}${location && ( typeof location === 'string' ? location : location.join('+') )}${stack && ( typeof stack === 'string' ? stack : stack.join('+') )}`

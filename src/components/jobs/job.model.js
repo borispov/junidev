@@ -52,6 +52,7 @@ JobSchema.pre('save', function(next) {
   if (doc.isNew) {
     counter.findOneAndUpdate({ _id: 'jobs' }, {$inc: {seq: 1}}, function(err, counter) {
       if (err) return next(err)
+      console.log(counter.seq);
       doc.jobID = counter.seq;
       next();
     })

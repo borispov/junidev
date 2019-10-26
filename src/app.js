@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const logger = require('./utils/logger');
+const routeLogger = require('./utils/routeLogger');
 const path = require('path');
 const exphbs = require('express-handlebars');
+
 
 const { errorHandler } = require('./utils/errorHandler');
 const jobRoutes = require('./components/jobs/jobs.routes');

@@ -1,0 +1,30 @@
+<!-- FEEDBACK CARD -->
+
+<div class="feedback hidden leading-loose fixed right-0 bottom-0 mb-12 z-10">
+<form action="/users/feedback" method="POST" class="max-w-xs w-72 m-4 p-10 bg-white rounded shadow-xl">
+  <p class="text-gray-800 font-light text-base mb-8 leading-tight">
+  {{#isEq type 'feedback' }}
+    <span class="text-red-400 italic font-semibold">{{ message }}</span>
+   {{else}}
+  Interested in a new feature / leave a feedback?
+  {{/isEq}}
+  </p>
+  <div class="mt-4">
+    <label class="block text-sm text-gray-600" for="cus_name">Name</label>
+    <input class="w-full text-sm px-5 py-1 text-gray-700 bg-gray-200 rounded" id="fd_name" name="name" type="text" required="true" placeholder="Your Name" autocomplete="off" aria-label="Name">
+  </div>
+  <div class="mt-2">
+    <label class="block text-sm text-gray-600" for="cus_email">Email</label>
+    <input class="w-full text-sm px-5 py-1 text-gray-700 bg-gray-200 rounded" id="fd_email" name="email" type="email" required="true" placeholder="Your Email" autocomplete="off" aria-label="Email">
+  </div>
+  <div class="mt-2">
+    <label class="block text-sm text-gray-600" for="cus_email">Message</label>
+    <textarea maxlength="900" rows="5" style="resize:none;" class="w-full h-auto text-sm px-2 py-2 text-gray-700 bg-gray-200 rounded" id="fd_msg"  name="msg" type="text" required="true" autocomplete="off" placeholder="Your message here . . ." aria-label="Message"></textarea>
+  </div>
+  <div class="mt-4">
+    <button class="px-4 py-1 text-white font-light tracking-wider bg-gray-900 rounded" type="submit">SEND</button>
+
+    <p class="text-sm font-thin italic text-gray-600 mt-2">* Alternatively, if your feedback is larger than the capacity of this form, I'm available @ <a class="font-bold" href="mailto: boristofu@gmail.com">email</a></p>
+  </div>
+</form>
+</div>

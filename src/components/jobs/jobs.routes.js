@@ -1,6 +1,7 @@
 const express = require('express');
 const { jobController } = require('./jobs.controllers');
 const Router = express.Router();
+const routeLogger = require('../../utils/routeLogger');
 
 // retrieve a single job post
 Router.get('/jobs/:id', jobController.getJob);
@@ -16,9 +17,11 @@ Router.post('/jobs/postjob', jobController.postJob);
 
 // Apply. -- should this be a route.. perhaps for.. tracking and analysis? 
 
-Router.get('/private/getSO', jobController.scrapeAndSaveSO);
+Router.get('/private/getSO', jobController.getSO);
 
-Router.get('/private/getIndeed', jobController.scrapeAndSaveIndeed)
+Router.get('/private/getIndeed', jobController.getIndeed);
+
+Router.get('/private/getGlassdoor', jobController.getGlassdoor);
 
 Router.get('/private/purge', jobController.purge);
 

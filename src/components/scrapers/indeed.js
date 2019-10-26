@@ -116,7 +116,7 @@ class Indeed {
     // FETCHING VueJS -- only Homepage! Yess!
     const jobCards = await page.$$(selector);
 
-    for (const i of jobCards.slice(-10)){
+    for (const i of jobCards){
 
       await i.click();
 

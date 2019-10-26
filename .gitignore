@@ -7,3 +7,5 @@ logs/
 .env
 
 dist/
+
+src/components/users/config.js

@@ -1,5 +1,4 @@
-const baseURL = `https://www.indeed.com/jobs?as_and=&as_phr=Junior&as_any=Junior+Developer&as_not=Administrator+eLearning+Senior&as_ttl=&as_cmp=&jt=all&st=employer&as_src=&salary=&radius=25&l=Remote&fromage=7&limit=50&sort=date&psf=advsrch`
-
+const baseURL = `https://www.indeed.com/jobs?as_and=&as_phr=Junior&as_any=Junior+Developer&as_not=Administrator+eLearning+Senior&as_ttl=&as_cmp=&jt=all&st=employer&as_src=&salary=&radius=25&l=Remote&fromage=7&limit=50&sort=date&psf=advsrch` 
 const puppeteer = require('puppeteer');
 // const logger = require('../../utils/logger');
 // const { ScrapeError } = require('../../utils/errorHandler');

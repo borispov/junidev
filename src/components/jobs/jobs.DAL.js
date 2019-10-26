@@ -4,16 +4,16 @@ const logger = require('../../utils/logger');
 const addJob = async (job) => {
 
   try {
-    if (job.src === 'stackoverflow') {
-      const maybeJob = await getJobBySOID(job.SOID);
-      if (maybeJob) throw new Error('Job Already Exists')
+    const href = job['href'];
+    const maybeJob = await getJobByLink(href);
+
+    if (maybeJob !== null) {
+      console.log('JOB Already Exists');
+      return null;
     }
 
     const newJob = await new JobModel(job);
-    newJob.save((err, j) => {
-      if (err) return err
-      console.log(`JOB has been saved to DB: \n${j}`)
-    });
+    newJob.save();
     return newJob;
   } catch(err) {
     console.log('error occured . . .\n', err);
@@ -22,11 +22,15 @@ const addJob = async (job) => {
 
 }
 
-const addJobs = (jobs) => {
-  console.log('inside jobsDAL')
-  console.log('recevied jobs: ', jobs.length)
-  // return JobModel.insertMany(jobs);
-  return jobs.map(addJob);
+const addJobs = async (jobs) => {
+  console.log('Data Acess Layer. Received Number Of Jobs: ', jobs.length)
+  let jobsAdded = [];
+  for (var i = 0; i < jobs.length; i++ ){
+    const jobToAdd = await addJob(jobs[i]);
+    jobToAdd !== null && jobsAdded.push(jobToAdd);
+  }
+  // const jobsAdded = await jobs.map(async i => await addJob(i))
+  return jobsAdded
 }
 
 const getJobs = async () => await JobModel.find({}).sort({joinDate: -1});
@@ -38,7 +42,10 @@ const deleteAll = async () => await JobModel.remove({});
 
 const getJobBySOID = SOID => JobModel.findOne({ SOID })
 
-const getJob = async jobID => await JobModel.findOne({ jobID });
+const getJob = async query => await JobModel.findOne({ query });
+
+const getJobByLink = href => JobModel.findOne({ href });
+
 
 module.exports.JobDAL = {
   addJob,

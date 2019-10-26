@@ -1,8 +1,16 @@
 module.exports = {
   theme: {
     extend: {
+      inset: {
+        '1/2': '50%',
+        '1/4': '25%',
+        '-16': '-4rem',
+        '-1/2': '-50%',
+        '60': '60%',
+      },
       zIndex: {
-        'neg1': '-1'
+        'neg1': '-1',
+        '50': '50'
       },
       minWidth: {
         '1/4': '25%',
@@ -16,6 +24,8 @@ module.exports = {
       }
     }
   },
-  variants: {},
+  variants: {
+    appearance: ['responsive', 'hover', 'focus'],
+  },
   plugins: []
 }

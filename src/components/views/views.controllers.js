@@ -11,6 +11,8 @@ const renderHomePage = async (req, res, next) => {
 
   try {
     const jobs = await jobService.getJobs();
+
+    return res.status(200).render('home', { jobs })
     return jobs.length
       ? res.status(200).render('home', { jobs })
       : res.status(404).render('404', { layout: '404.hbs', message: "No Jobs Available At The Moment.. Try again later" })

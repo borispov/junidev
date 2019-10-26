@@ -1,0 +1,23 @@
+<div class="shadow rounded to border-solid border-t-4 border-purple p-6 my-2">
+
+  <h3 class="text-gray-600 text-sm font-sans text-center tracking-wide leading-normal">
+    Receive 
+    <span class="font-semibold">weekly</span>
+    <form action="/users/subscribe" method="POST" class="inline-block">
+      <span class="py-4"> 
+        <select class="aappearance-none bg-orange-400 border-t border-b mx-1">
+          <option value="developer">developer</option>
+          <option value="designer">designer</option>
+        </select>
+      </span>
+      jobs  to your Email - 
+      <span class="font-semibold text-red-400 font-serif">NO BULLSHIT</span>
+  </h3>
+
+      <div class="m-4 flex" action="/users/subscribe" method="POST">
+        <input class="sm:w-full w-3/4 rounded-l-md p-2 border-t mr-0 border-b-4 border-l text-gray-800 border-gray-200 bg-white" placeholder="your@mail.com"/>
+        <input class="sm:w-full w-3/4 rounded-l-md mx-2 p-2 border-t mr-0 border-b-4 border-l text-gray-800 border-gray-200 bg-white" placeholder="NAME" type="text"/>
+        <button class="px-4 rounded-r-md bg-yellow-400 text-gray-800 font-bold p-2 uppercase border-yellow-500 border-t border-b border-r">Subscribe</button>
+      </div>
+    </form>
+</div>

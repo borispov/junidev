@@ -85,11 +85,11 @@ const getJob = async (req, res, next) => {
 
     const requestedJob = await jobService.getJob(id)
 
-    if (err) {
-      const error = new AppError("mongoDB findOne", "AppError", err.msg, true);
-      next(error);
-      return;
-    }
+    // if (requestedJob === null) {
+    //   const error = new AppError("mongoDB findOne", "AppError", err.msg, true);
+    //   next(error);
+    //   return;
+    // }
 
     return requestedJob
   } catch(err) {
@@ -98,7 +98,7 @@ const getJob = async (req, res, next) => {
 
 }
 
-const scrapeAndSaveSO = async (req, res, next) => {
+const getSO = async (req, res, next) => {
 
   const localhosts = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -116,7 +116,7 @@ const scrapeAndSaveSO = async (req, res, next) => {
 
 }
 
-const scrapeAndSaveIndeed = async (req, res, next) => {
+const getIndeed = async (req, res, next) => {
 
   const localhosts = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -134,7 +134,34 @@ const scrapeAndSaveIndeed = async (req, res, next) => {
 
 }
 
+const getGlassdoor = async (req, res, next) => {
+
+  const localhosts = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  if (!localhosts.includes(ip)) {
+    logger.info("A Request Came From Unauthorized Source.")
+    return;
+  }
+
+  try {
+    return await jobService.getGlassdoorJobs();
+  } catch(e) {
+    next(e);
+  }
+
+}
+
 const purge = async (req,res,next) => {
+
+
+  const localhosts = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  if (!localhosts.includes(ip)) {
+    logger.info("A Request Came From Unauthorized Source.")
+    return;
+  }
 
   try {
     await jobService.deleteAll();
@@ -148,5 +175,5 @@ const purge = async (req,res,next) => {
 
 
 module.exports.jobController = {
-  getJob, getJobs, postJob, scrapeAndSaveSO, purge, scrapeAndSaveIndeed
+  getJob, getJobs, postJob, getSO, purge, getIndeed, getGlassdoor
 }

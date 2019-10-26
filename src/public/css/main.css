@@ -81,3 +81,11 @@ body {
 .job__desc strong {
   font-weight: 600;
 }
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+    padding: 4px 12px;
+}
