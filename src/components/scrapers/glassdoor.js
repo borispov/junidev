@@ -88,7 +88,7 @@ class Glassdoor {
 
     const jbs = await page.evaluate((sel) => {
       const alldivs = Array.from(document.querySelectorAll('.jl'));
-      const data = alldivs.slice(0,2).map(el => {
+      const data = alldivs.map(el => {
         const elProp = e => prop => sel => e.querySelector(sel)[prop];
         const gt = elProp(el)('textContent');
 
