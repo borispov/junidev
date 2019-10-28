@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "npm run css:watch && NODE_ENV=development npx nodemon server.js",
+    "prod": "NODE_ENV=production pm2 server.js",
     "dev": "npm run css:watch && webpack-dev-server --no-inline",
     "css:watch": "postcss src/public/css/tailwind.css -o src/public/css/style.css",
     "css:build": "cross-env NODE_ENV=production postcss src/public/css/main.css -o src/public/css/style.css",
@@ -12,7 +13,7 @@
     "webpack:watch": "npx webpack --watch",
     "cpu:profile": "node --prof-process isolate-0xnnnnnnnnnnnn-v8.log > processed.txt",
     "test": "find ./src -name '*.test.js' | xargs mocha -R spec",
-    "build": "npm run css:build && npm run css:build && npx webpack -p"
+    "build": "npm run css:build"
   },
   "keywords": [],
   "author": "Boris Povolotsky <boristofu@gmail.com>",

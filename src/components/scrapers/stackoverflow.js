@@ -92,18 +92,51 @@ class StackOverflow {
     // get Page 1 links
     const jobLinksPageOne = await this._getLinks(page);
 
+
     //get Page 2 Links
     await page.goto(this._getPage(2));
     const jobLinksPageTwo = await this._getLinks(page);
 
+
     await page.goto(this._getPage(3));
     const jobLinksPageThree = await this._getLinks(page);
 
+    function noDups(arr, comp) {
+      const unique = arr
+           .map(e => e[comp])
+        .map((e, i, final) => final.indexOf(e) === i && i)
+        .filter(e => arr[e]).map(e => arr[e]);
+       return unique;
+    }
+
     const jobLinks = cc([])(jobLinksPageOne, jobLinksPageTwo, jobLinksPageThree);
+
+    console.log(`
+      COMBINING:: 
+      ${jobLinksPageOne.length} jobs from page 1 + ${jobLinksPageTwo.length} jobs from page 2 + ${jobLinksPageThree.length} from page 3.... for a total OF:
+      ${jobLinks.length}
+    `)
+
+    const filteredLinks = noDups(jobLinks, 'href');
+
+
+    // console.log(`
+    //   INCOMINGGG ALLLL SOIDSSSSSSS
+    //   ${jobLinks.map(o => o.SOID)}
+    // `)
+
+    console.log('---------------------')
+    console.log('----BEFORE DUPS REMOVAL :::::::::--------')
+    console.log(`---- ${jobLinks.length}`)
+    console.log('---------------------')
+    console.log('---------------------')
+    console.log('----BEFORE DUPS REMOVAL :::::::::--------')
+    console.log(`---- ${filteredLinks.length}`)
+    console.log('---------------------')
 
     let arrayOfJobs = [];
 
-    for (const link of jobLinks) {
+    for (const link of filteredLinks) {
       try {
         await page.goto(link.href);
         // logger.info(`Visiting .. ${link.href}`);
@@ -131,25 +164,26 @@ class StackOverflow {
     const self = this;
     const jobLinks = await page.$$eval(selector, all => all
       .map(element => {
-        const href = element.querySelector('[href]')['href']
-        const date = element.querySelector('.-title span.r0 .fc-black-500')['textContent']
+        const href = element.querySelector('[href]')['href'].split('&so_source')[0];
+        const date = element.querySelector('.-title span.r0 .fc-black-500')['textContent'];
         return { href, date }
     }))
-      
-      // .filter(url => this._isDupURL(this.data)(url))
-      // .filter(url => self._isDupURL(self.data)(url)))
 
     for (const link of jobLinks) {
+      const _jobId = url => url.split('/').reduce((a,c,i,s) => c === 'jobs' ? s[i+1] : a);
       const url = await link.href;
       const date = link.date
+      const SOID = _jobId(url);
+
       const o = {
         href: url,
-        date: this._parseDate(date)
+        date: this._parseDate(date),
+        SOID,
       }
 
       this._isHours(date) 
-        ? links.push(link)
-        : date.replace(/\D/g, "") < 18
+        ? links.push(o)
+        : date.replace(/\D/g, "") < 30
           ? links.push(o)
           : null
     };
@@ -179,7 +213,7 @@ class StackOverflow {
     const title = document.querySelector('.fs-headline1').innerText.split('(m/f/d)')[0];
     const logo = document.querySelector('.s-avatar.s-avatar__lg img')['src'];
     const href = url
-    const SOID = _jobId(href);
+    // const SOID = _jobId(href);
 
     // const companyEl = document.querySelector('.-life-at-company h2');
     const companyEl = document.querySelector('.job-details--header .fc-black-700 a')
@@ -188,7 +222,7 @@ class StackOverflow {
 
     return {
       title,
-      SOID,
+      // SOID,
       href,
       applyLink,
       stack: techStack,
@@ -200,7 +234,7 @@ class StackOverflow {
     };
   }, page.url());
 
-  _getPage = n => this.searchURL + `pg=${n}`;
+  _getPage = n => this.searchURL + `&sort=i&pg=${n}`;
 
   _getURL = (location, stack) => {
     return `${defaultURL}${location && ( typeof location === 'string' ? location : location.join('+') )}${stack && ( typeof stack === 'string' ? stack : stack.join('+') )}`

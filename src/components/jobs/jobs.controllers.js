@@ -154,6 +154,7 @@ const getGlassdoor = async (req, res, next) => {
 
 const purge = async (req,res,next) => {
 
+  logger.info("BEWARE! :: PURGE Route Called")
 
   const localhosts = ['::1', '127.0.0.1', '::ffff:127.0.0.1'];
   const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
