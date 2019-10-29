@@ -37,17 +37,24 @@
   <!--  -->
 
   <!-- <span class="sm:hidden text&#45;gray&#45;900"> | </span> -->
-  <div>
-    <p class="sm:mr-10 mr-2 w-auto text-gray-600 inline">
+  <div class="flex flex-row align-center w-1/4">
+
+    <p class="sm:mr-6 mr-2 w-1/2 text-gray-600 md:text-base text-sm">
       {{this.location}}
     </p>
-    <div class="w-12 h-12 object-center object-fit rounded cursor-default">
-      <img src="/img/icons/{{this.source}}.svg" alt="Source Company Icon">
+
+    <div class="h-1/2 rounded cursor-default w-1/2 max-w-min mx-auto">
+      <button class="rounded text-gray-100 font-normal">
+        <img class="md:w-12 md:h-12 w-8 h-8 text-gray-100 shadow-lg mx-auto block" src="/img/icons/{{this.src}}.svg" alt="Source Company Icon">
+
+        <p class="text-gray-600 mx-auto md:text-base sm:text-sm sm:font-normal font-thin">
+          {{#timeAgo this.joinDate}}
+          {{/timeAgo}}
+        </p>
+      </button>
     </div>
-    <p class="sm:mr-10 mr-2 w-auto text-gray-600 inline">
-      {{#timeAgo this.joinDate}}
-      {{/timeAgo}}
-    </p>
+
   </div>
+
 
 </div>

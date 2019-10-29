@@ -12,6 +12,9 @@ module.exports = {
         'neg1': '-1',
         '50': '50'
       },
+      maxWidth: {
+        'min': '8rem'
+      },
       minWidth: {
         '1/4': '25%',
         '1/2': '50%',

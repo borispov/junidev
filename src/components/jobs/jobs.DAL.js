@@ -1,4 +1,4 @@
-const { JobModel } = require('./job.model');
+const { JobModel, TestM } = require('./job.model');
 const logger = require('../../utils/logger');
 
 
@@ -6,17 +6,15 @@ const addJob = async (job) => {
 
   try {
     const href = job['href'];
-    const maybeJob = await getJobByLink(href);
+    const mbJob = await JobModel.findOne({ href: job.href })
+    // const maybeJob = await getJobByLink(href);
 
-    if (maybeJob !== null) {
+    if (mbJob !== null) {
       console.log('JOB Already Exists');
       return null;
     }
 
-    console.log(maybeJob)
-
     const newJob = await new JobModel(job).save();
-    // newJob.save();
     return newJob;
   } catch(err) {
     console.log('error occured . . .\n', err);
@@ -41,6 +39,8 @@ const addJobs = async (jobs) => {
     const jobToAdd = await addJob(jobs[i]);
     jobToAdd !== null && jobsAdded.push(jobToAdd);
   }
+  const mappedHrefs = jobsAdded.map(j => j['href']);
+  await new TestM(mappedHrefs).save();
   console.log('DAL :: ' + jobsAdded.length + ' jobs added.')
   return jobsAdded
 }
@@ -61,7 +61,7 @@ const getJob = async query => {
   return tj
 }
 
-const getJobByLink = async href => await JobModel.findOne({ href });
+const getJobByLink = async href => await JobModel.findOne({ href: href });
 
 
 module.exports.JobDAL = {

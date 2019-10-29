@@ -123,10 +123,11 @@ class StackOverflow {
         // logger.info(`Visiting .. ${link.href}`);
         const jobinfo = await this._getJobInfo(page);
         await page.waitFor(100);
+        jobinfo.location = link.location;
         jobinfo.joinDate = link.date;
         jobinfo.src = 'SO';
         arrayOfJobs.push(jobinfo);
-        await page.waitFor(400);
+        await page.waitFor(250);
       }
       catch(err) {
         logger.info(err.msg);
@@ -147,16 +148,20 @@ class StackOverflow {
       .map(element => {
         const href = element.querySelector('[href]')['href'].split('&so_source')[0];
         const date = element.querySelector('.-title span.r0 .fc-black-500')['textContent'];
-        return { href, date }
+        const locationEl = element.querySelector('.-remote') || element.querySelector('.-company')['lastElementChild']
+        const location = locationEl && locationEl['innerText'].replace(/-/g, '').trim();
+        return { href, date, location }
     }))
 
     for (const link of jobLinks) {
       const _jobId = url => url.split('/').reduce((a,c,i,s) => c === 'jobs' ? s[i+1] : a);
       const url = await link.href;
-      const date = link.date
+      const location = link.location;
+      const date = link.date;
       const SOID = _jobId(url);
 
       const o = {
+        location,
         href: url,
         date: this._parseDate(date),
         SOID,

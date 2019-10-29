@@ -36,6 +36,7 @@ const JobSchema = new Schema({
   },
 
   // All optional.
+  src: { type: String },
   about: { type: String },
   stack: { type: [String] },
   company: { type: String },
@@ -61,6 +62,20 @@ JobSchema.pre('save', function(next) {
   }
 })
 
+
+const TestSchema = new Schema({
+  arr: [String]
+});
+
 const Counter = mongoose.model('counter', CounterSchema)
 
-module.exports.JobModel = mongoose.model('Job', JobSchema);
+const JobModel = mongoose.model('Job', JobSchema);
+
+const TestM = mongoose.model('test', TestSchema);
+
+module.exports = {
+  JobModel,
+  TestM
+}
+
+// module.exports.JobModel = mongoose.model('Job', JobSchema);
