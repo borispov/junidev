@@ -30,7 +30,7 @@ module.exports = {
 
   isEq: function(a, b, options) {
     return a === b ? options.fn(this) : options.inverse(this);
-  }
+  },
 
   // parseSoText: function(x) {
   //   const raw = x;

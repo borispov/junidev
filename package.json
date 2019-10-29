@@ -12,7 +12,7 @@
     "webpack:build": "webpack --build --mode development",
     "webpack:watch": "npx webpack --watch",
     "cpu:profile": "node --prof-process isolate-0xnnnnnnnnnnnn-v8.log > processed.txt",
-    "test": "find ./src -name '*.test.js' | xargs mocha -R spec",
+    "test": "find ./src -name '*.test.js' | xargs mocha -R spec --timeout 10000",
     "build": "NODE_ENV=production npm run css:build"
   },
   "keywords": [],

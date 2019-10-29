@@ -13,8 +13,17 @@ const jobs = [
     jobID: '119911'
   },
   {
+    title: 'name',
+    href: 'https://stackoverflow.com/jobs/119911',
+    stack: ['js', 'nodejs', 'github'],
+    salary: '$40k-65k',
+    description: 'Job Description\n Hilarious Job Benefits... \n Job Requirements',
+    joinDate: '2019/09/09',
+    jobID: '119911'
+  },
+  {
     title: 'brownies developeRs',
-    href: 'https://stackoverflow.com/jobs/119901',
+    href: 'https://stackoverflow.com/jobs/11',
     stack: ['stripe', 'sinatra', 'ruby'],
     salary: '$99k-115k',
     description: 'Job Description\n Hilarious Job Benefits... \n Job Requirements',
@@ -24,17 +33,6 @@ const jobs = [
 
 ]
 
-const jobPost = {
-  title: 'name',
-  href: 'https://stackoverflow.com/jobs/119911',
-  stack: ['js', 'nodejs', 'github'],
-  salary: '$40k-65k',
-  description: 'Job Description\n Hilarious Job Benefits... \n Job Requirements',
-  joinDate: '2019/09/09',
-  jobID: '119911'
-};
-
-
 
 // before(async () => {
 //   await JobDAL.deleteAll();
@@ -42,13 +40,13 @@ const jobPost = {
 
 describe("Database Functions...", () => {
 
-  // it("add collection of jobs to DB", async () => {
+  // it("add collection of jobs to DB", async (done) => {
   //
   //   const jobsAdded = await JobDAL.addJobs(jobs);
   //
-  //   console.log(jobsAdded)
-  //
   //   expect(jobsAdded).to.be.an('array').that.is.not.empty;
+  //
+  //   done()
   // })
 
 

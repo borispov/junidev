@@ -102,6 +102,9 @@ class StackOverflow {
     const jobLinksPageThree = await this._getLinks(page);
 
     function noDups(arr, comp) {
+      if (new Set(arr).siez === arr.length) {
+        return arr
+      }
       const unique = arr
            .map(e => e[comp])
         .map((e, i, final) => final.indexOf(e) === i && i)
@@ -110,29 +113,7 @@ class StackOverflow {
     }
 
     const jobLinks = cc([])(jobLinksPageOne, jobLinksPageTwo, jobLinksPageThree);
-
-    console.log(`
-      COMBINING:: 
-      ${jobLinksPageOne.length} jobs from page 1 + ${jobLinksPageTwo.length} jobs from page 2 + ${jobLinksPageThree.length} from page 3.... for a total OF:
-      ${jobLinks.length}
-    `)
-
     const filteredLinks = noDups(jobLinks, 'href');
-
-
-    // console.log(`
-    //   INCOMINGGG ALLLL SOIDSSSSSSS
-    //   ${jobLinks.map(o => o.SOID)}
-    // `)
-
-    console.log('---------------------')
-    console.log('----BEFORE DUPS REMOVAL :::::::::--------')
-    console.log(`---- ${jobLinks.length}`)
-    console.log('---------------------')
-    console.log('---------------------')
-    console.log('----BEFORE DUPS REMOVAL :::::::::--------')
-    console.log(`---- ${filteredLinks.length}`)
-    console.log('---------------------')
 
     let arrayOfJobs = [];
 
@@ -143,7 +124,7 @@ class StackOverflow {
         const jobinfo = await this._getJobInfo(page);
         await page.waitFor(100);
         jobinfo.joinDate = link.date;
-        jobinfo.src = 'stackoverflow';
+        jobinfo.src = 'SO';
         arrayOfJobs.push(jobinfo);
         await page.waitFor(400);
       }
@@ -210,7 +191,7 @@ class StackOverflow {
     const about = aboutElement && aboutElement.innerHTML;
     const salaryElement = document.querySelector('.-salary');
     const salary = salaryElement && salaryElement.offsetParent.className === 'container' ? salaryElement.textContent : null;
-    const title = document.querySelector('.fs-headline1').innerText.split('(m/f/d)')[0];
+    const title = document.querySelector('.fs-headline1').innerText.split('(m/\./\.)')[0];
     const logo = document.querySelector('.s-avatar.s-avatar__lg img')['src'];
     const href = url
     // const SOID = _jobId(href);

@@ -28,11 +28,10 @@ const renderHomePage = async (req, res, next) => {
 const renderJob = async (req, res, next) => {
 
   const { id } = req.params
-  console.log(id)
 
   try {
 
-    const requestedJob = await jobService.getJob(id);
+    const requestedJob = await jobService.getJob({ jobID: id });
     console.log(requestedJob);
     return requestedJob === null
       ? res.status(404).render('404', { message: "Cannot retrieve this job, if it it's not older than 30d, tell us about it, it's probably a bug", layout: '404.hbs'})

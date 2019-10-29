@@ -74,16 +74,6 @@ class Indeed {
         // jobinfo.joinDate = link.date;
         jobinfo.src = 'indeed';
 
-        // console.log(`\n
-        // -----------------------------------------------
-        //   Company Name: ${jobinfo.company}\n
-        //   applyLink: ${jobinfo.applyLink}\n
-        //   Job TItle: ${jobinfo.title}\n
-        //   Time published: ${jobinfo.joinDate}\n
-        //   Tech Stack: ${jobinfo.stack}\n
-        //   --------------------------------------------
-        // `)
-
         await page.waitFor(100);
         arrayOfJobs.push(jobinfo);
         await page.waitFor(203);
@@ -170,33 +160,3 @@ class Indeed {
 }
 
 module.exports = Indeed;
-
-
-
-
-
-
-
-
-
-//
-//
-//
-// for (const link of links) {
-//   await page.goto(link);
-//   const description = await page.$eval('jobDescriptionContent desc strong', el => el.lastElementChild.innerHTML);
-//   const logo = await page.$eval('.logo .cell img')['src'];
-//
-//   const theJob = {
-//     href: link.href,
-//     location: link.location,
-//     company: link.company,
-//     date: link.date,
-//     logo,
-//     description,
-//     title: link.title
-//   }
-//   arrayOfJobs.push(theJob);
-// }
-//
-// console.log(arrayOfJobs);

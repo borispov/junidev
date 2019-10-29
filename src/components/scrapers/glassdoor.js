@@ -123,6 +123,8 @@ class Glassdoor {
         return [description, logo];
       }, selectors)
 
+      link.src = 'gd'
+
       const jobObject = {
         ...link,
         description,

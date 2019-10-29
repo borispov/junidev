@@ -104,10 +104,10 @@ if (require.main === module) {
         2250,
         () => jobService.getStackOverflowJobs(),
         10000,
-        () => jobService.getIndeedJobs(),
-        12500,
-        () => jobService.getGlassdoorJobs(),
-        22000,
+        // () => jobService.getIndeedJobs(),
+        // 12500,
+        // () => jobService.getGlassdoorJobs(),
+        // 22000,
         () => mongoose.disconnect()
       ])
 

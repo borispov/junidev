@@ -1,6 +1,7 @@
 const { JobModel } = require('./job.model');
 const logger = require('../../utils/logger');
 
+
 const addJob = async (job) => {
 
   try {
@@ -12,8 +13,10 @@ const addJob = async (job) => {
       return null;
     }
 
-    const newJob = await new JobModel(job);
-    newJob.save();
+    console.log(maybeJob)
+
+    const newJob = await new JobModel(job).save();
+    // newJob.save();
     return newJob;
   } catch(err) {
     console.log('error occured . . .\n', err);
@@ -23,13 +26,22 @@ const addJob = async (job) => {
 }
 
 const addJobs = async (jobs) => {
-  console.log('Data Acess Layer. Received Number Of Jobs: ', jobs.length)
+
+  // PromiseAll -- parallel saving.
+  // const allModels = jobs.map(eachJob => new JobModel(eachJob));
+  // const uniqueModels = noDups(allModels, 'href');
+  // const jjs = await Promise.all(uniqueModels.map(x => x.save()));
+  // return jjs
+
+  console.log(`DAL :: Received ${jobs.length} Jobs:`)
   let jobsAdded = [];
+
+  // if job does not exist, push to array that is returned as server response
   for (var i = 0; i < jobs.length; i++ ){
     const jobToAdd = await addJob(jobs[i]);
     jobToAdd !== null && jobsAdded.push(jobToAdd);
   }
-  // const jobsAdded = await jobs.map(async i => await addJob(i))
+  console.log('DAL :: ' + jobsAdded.length + ' jobs added.')
   return jobsAdded
 }
 
@@ -42,9 +54,14 @@ const deleteAll = async () => await JobModel.remove({});
 
 const getJobBySOID = SOID => JobModel.findOne({ SOID })
 
-const getJob = async query => await JobModel.findOne({ query });
+// const getJob = async query => await JobModel.findOne({ query });
 
-const getJobByLink = href => JobModel.findOne({ href });
+const getJob = async query => {
+  const tj = await JobModel.findOne( query );
+  return tj
+}
+
+const getJobByLink = async href => await JobModel.findOne({ href });
 
 
 module.exports.JobDAL = {
