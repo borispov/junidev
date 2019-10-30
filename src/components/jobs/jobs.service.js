@@ -46,7 +46,7 @@ class JobService {
   _notifyUsers = () => "SomeMethodOfNotifications_here";
 
   getGlassdoorJobs = async () => {
-    logger.info(`FROM JOB_SERVICE:: Activating __Indeed__ Scraper`);
+    logger.info(`FROM JOB_SERVICE:: Activating __Glassdoor__ robot`);
     const jobs = await glassdoor.getJobs();
 
     console.log('my jobs: ', jobs.length);
@@ -54,7 +54,7 @@ class JobService {
   }
 
   getIndeedJobs = async () => {
-    logger.info(`FROM JOB_SERVICE:: Activating __Indeed__ Scraper`);
+    logger.info(`FROM JOB_SERVICE:: Activating __Indeed__ robot`);
     const jobs = await indeed.getJobs();
 
     console.log('my jobs: ', jobs.length);
@@ -62,7 +62,7 @@ class JobService {
   }
 
   getStackOverflowJobs = async () => {
-    logger.info(`FROM JOB_SERVICE :: Activating __Stackoverflow__ Scraper`);
+    logger.info(`FROM JOB_SERVICE :: Activating __Stackoverflow__ robot`);
 
     console.log('hello from stackoverflow worker');
     const jobs = await stackOverflow.getJobs();
@@ -103,11 +103,11 @@ if (require.main === module) {
         () => db(),
         2250,
         () => jobService.getStackOverflowJobs(),
-        15000,
+        18000,
         () => jobService.getIndeedJobs(),
-        15000,
+        18000,
         () => jobService.getGlassdoorJobs(),
-        40000,
+        18000,
         () => mongoose.disconnect()
       ])
 

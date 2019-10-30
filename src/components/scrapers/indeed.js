@@ -111,7 +111,8 @@ class Indeed {
       await i.click();
 
       await page.waitFor('#vjs-desc');
-      const href = await _getText(page, '[data-tn-element=jobTitle]', 'href');
+      const href = await i.$eval('.title a', el => el.href);
+      // const href = await _getText(page, '[data-tn-element=jobTitle]', 'href');
       const description = await _getText(page, '#vjs-desc', 'innerHTML');
       const rawDate = await _getText(page, '.date');
       const date = _parseDate(rawDate);
@@ -123,17 +124,13 @@ class Indeed {
       const sel = '.view-apply-button'
       const applyText = await _getText(page, sel);
       const applyLink = applyText === 'Apply Now' ? href : await _getText(page, sel, 'href');
+      const src = 'indeed';
 
       links.push({
-        href, title, description, company, location, stack, applyLink, joinDate: date
+        href, title, src, description, company, location, stack, applyLink, joinDate: date
       })
     }
 
-    // for (const link of jobLinks.slice(-3)) {
-    //   const newLink = { ...link, date: _parseDate(link.date) };
-    //   if (isTooOld(link.date) || link.company === 'undefined') return;
-    //   links.push(newLink);
-    // };
     return [links, true];
   }
 

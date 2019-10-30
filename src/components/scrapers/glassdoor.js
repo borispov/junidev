@@ -36,7 +36,7 @@ class Glassdoor {
       headless: true,
       ignoreHTTPSErrors: true,
       devtools: true,
-      dumpio: true,
+      // dumpio: true,
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -53,7 +53,7 @@ class Glassdoor {
 
     await page.evaluateOnNewDocument(preloadFile);
     await page.setExtraHTTPHeaders({ 'Accept-Language': 'en' });
-    await page.setUserAgent("--user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'")
+    // await page.setUserAgent("--user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'")
     await page.setRequestInterception(true);
 
     page.on("request", r => {
@@ -72,7 +72,7 @@ class Glassdoor {
       await browser.close();
       console.log('FINISHED, received number of jobs: ', jobs.length)
 
-      console.log(jobs);
+      console.log(jobs[2]);
       return jobs;
     } catch(e) {
       const err = new ScrapeError(e.msg, 'Scraper Error:', 'Error Inside getJobs()', true);
@@ -130,6 +130,7 @@ class Glassdoor {
         description,
         logo
       }
+
       arrayOfJobs.push(jobObject);
     }
 
@@ -138,7 +139,6 @@ class Glassdoor {
         const err = new ScrapeError(e.msg, 'Scraper Error:', 'Error Inside extractJobs()', true);
         return err;
     }
-    
 
 
   }

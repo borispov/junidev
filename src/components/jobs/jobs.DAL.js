@@ -6,16 +6,15 @@ const addJob = async (job) => {
 
   try {
     const href = job['href'];
-    const mbJob = await JobModel.findOne({ href: job.href })
-    // const maybeJob = await getJobByLink(href);
-
-    if (mbJob !== null) {
+    const mbJob = JobModel.findOne({ href: job.href }, async (err, doc) => {
+      if (err) return err
+      if (doc === null) {
+        setTimeout( async () => await new JobModel(job).save(), 100)
+        return
+      }
       console.log('JOB Already Exists');
       return null;
-    }
-
-    const newJob = await new JobModel(job).save();
-    return newJob;
+    })
   } catch(err) {
     console.log('error occured . . .\n', err);
     return err;
@@ -39,8 +38,6 @@ const addJobs = async (jobs) => {
     const jobToAdd = await addJob(jobs[i]);
     jobToAdd !== null && jobsAdded.push(jobToAdd);
   }
-  const mappedHrefs = jobsAdded.map(j => j['href']);
-  await new TestM(mappedHrefs).save();
   console.log('DAL :: ' + jobsAdded.length + ' jobs added.')
   return jobsAdded
 }
