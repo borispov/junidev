@@ -27,7 +27,8 @@ const JobSchema = new Schema({
 
   href: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   
   description: {
@@ -48,8 +49,29 @@ const JobSchema = new Schema({
 
 });
 
-JobSchema.pre('save', function(next) {
+JobSchema.pluging(uniqueValidator);
+
+const TestSchema = new Schema({
+  arr: [String]
+});
+
+const Counter = mongoose.model('counter', CounterSchema)
+
+const JobModel = mongoose.model('Job', JobSchema);
+
+const TestM = mongoose.model('test', TestSchema);
+
+JobSchema.pre('save', true, function(next, done) {
   const doc = this;
+
+  const mbj = JobModel.findOne({ href: doc.href }, (err, res) => {
+    if (err || res) {
+      const err = new Error(err || 'exists!')
+      next(err);
+    }
+    next();
+  })
+
   if (doc.isNew) {
     counter.findOneAndUpdate({ _id: 'jobs' }, {$inc: {seq: 1}}, function(err, counter) {
       if (err) return next(err)
@@ -61,17 +83,6 @@ JobSchema.pre('save', function(next) {
     next();
   }
 })
-
-
-const TestSchema = new Schema({
-  arr: [String]
-});
-
-const Counter = mongoose.model('counter', CounterSchema)
-
-const JobModel = mongoose.model('Job', JobSchema);
-
-const TestM = mongoose.model('test', TestSchema);
 
 module.exports = {
   JobModel,

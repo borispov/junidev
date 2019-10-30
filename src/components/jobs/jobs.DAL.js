@@ -1,4 +1,5 @@
 const { JobModel, TestM } = require('./job.model');
+const uniqueValidator = require('mongoose-unique-validator');
 const logger = require('../../utils/logger');
 
 
@@ -24,15 +25,8 @@ const addJob = async (job) => {
 
 const addJobs = async (jobs) => {
 
-  // PromiseAll -- parallel saving.
-  // const allModels = jobs.map(eachJob => new JobModel(eachJob));
-  // const uniqueModels = noDups(allModels, 'href');
-  // const jjs = await Promise.all(uniqueModels.map(x => x.save()));
-  // return jjs
-
   console.log(`DAL :: Received ${jobs.length} Jobs:`)
   let jobsAdded = [];
-
   // if job does not exist, push to array that is returned as server response
   for (var i = 0; i < jobs.length; i++ ){
     const jobToAdd = await addJob(jobs[i]);

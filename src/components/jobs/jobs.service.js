@@ -102,8 +102,8 @@ if (require.main === module) {
       return await sequence([
         () => db(),
         2250,
-        () => jobService.getStackOverflowJobs(),
-        18000,
+        // () => jobService.getStackOverflowJobs(),
+        // 18000,
         () => jobService.getIndeedJobs(),
         18000,
         () => jobService.getGlassdoorJobs(),
