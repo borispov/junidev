@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const uniqueValidator = require('mongoose-unique-validator');
 
 const CounterSchema = new Schema({
   _id: {type: String, required: true, unique: true},
@@ -49,7 +50,7 @@ const JobSchema = new Schema({
 
 });
 
-JobSchema.pluging(uniqueValidator);
+JobSchema.plugin(uniqueValidator);
 
 const TestSchema = new Schema({
   arr: [String]

@@ -1,5 +1,4 @@
 const { JobModel, TestM } = require('./job.model');
-const uniqueValidator = require('mongoose-unique-validator');
 const logger = require('../../utils/logger');
 
 
