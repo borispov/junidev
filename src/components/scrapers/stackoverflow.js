@@ -1,3 +1,4 @@
+const fs = require('fs');
 const puppeteer = require('puppeteer');
 const logger = require('../../utils/logger');
 const { ScrapeError } = require('../../utils/errorHandler');
@@ -63,9 +64,30 @@ class StackOverflow {
       },
       headless: true,
       ignoreHTTPSErrors: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"]
+      devtools: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-infobars",
+        "--window-position=0,0",
+        "--ignore-certifcate-errors",
+        "--ignore-certifcate-errors-spki-list",
+        "--user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'"
+      ]
     });
+    const preloadFile = fs.readFileSync(__dirname + '/utils/preload.js', 'utf8');
     const page = await browser.newPage();
+    await page.evaluateOnNewDocument(preloadFile);
+    await page.setExtraHTTPHeaders({ 'Accept-Language': 'en' });
+    await page.setRequestInterception(true);
+
+    page.on("request", r => {
+      if ( ["image", "stylesheet", "font", "script"].indexOf(r.resourceType()) !== -1 ) {
+        r.abort();
+      } else {
+        r.continue();
+      }
+    });
 
     try {
       this.searchURL = this._getURL(location, stack);
