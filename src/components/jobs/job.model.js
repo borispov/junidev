@@ -49,20 +49,22 @@ const JobSchema = new Schema({
 
 });
 
-JobSchema.pre('save', async function(next) {
+JobSchema.plugin(uniqueValidator);
+
+JobSchema.pre('save', function(next) {
   const doc = this;
   if (doc.isNew) {
+    console.log('Inside presave')
     counter.findOneAndUpdate({ id: 'jobs' }, {$inc: {seq: 1}}, function(err, counter) {
       if (err) return next(err)
-      console.log('From model.presave:: \nJob Number: ' + counter.seq + ' Has Been Added.');
       doc.jobID = counter.seq;
       next();
     })
+  } else {
+    next();
   }
 
 })
-
-JobSchema.plugin(uniqueValidator);
 
 module.exports.JobModel = mongoose.model('Job', JobSchema);
 
