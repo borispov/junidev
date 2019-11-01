@@ -1,22 +1,31 @@
-const { JobModel, TestM } = require('./job.model');
+const { JobModel } = require('./job.model');
 const logger = require('../../utils/logger');
 
 
 const addJob = async (job) => {
 
   try {
-    const href = job['href'];
-    const mbJob = JobModel.findOne({ href: job.href }, async (err, doc) => {
-      if (err) return err
-      if (doc === null) {
-        setTimeout( async () => await new JobModel(job).save(), 100)
-        return
-      }
-      console.log('JOB Already Exists');
-      return null;
-    })
+    const mbjob = await JobModel.findOne({ href: job.href });
+    if (mbjob === null) {
+      const newjob = await new JobModel(job).save();
+      return newjob
+    }
+
+    console.log('Potential Duplicate. Abort')
+    return null
+
+    // const mbJob = JobModel.findOne({ href: job.href }, async (err, doc) => {
+    //   if (err) return err
+    //   if (doc === null) {
+    //     setTimeout( async () => await new JobModel(job).save(), 100)
+    //     return
+    //   }
+    //   console.log('JOB Already Exists');
+    //   return null;
+    // })
   } catch(err) {
-    console.log('error occured . . .\n', err);
+    console.log('error occured . . .\n Possibly duplicate job..', err);
+    // logger.debug("ERROR SAVING DOC TO DB", err)
     return err;
   }
 
@@ -29,7 +38,7 @@ const addJobs = async (jobs) => {
   // if job does not exist, push to array that is returned as server response
   for (var i = 0; i < jobs.length; i++ ){
     const jobToAdd = await addJob(jobs[i]);
-    jobToAdd !== null && jobsAdded.push(jobToAdd);
+    jobToAdd !== null && jobToAdd instanceof Error === false && jobsAdded.push(jobToAdd);
   }
   console.log('DAL :: ' + jobsAdded.length + ' jobs added.')
   return jobsAdded

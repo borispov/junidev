@@ -2,6 +2,7 @@ const fs = require('fs');
 const puppeteer = require('puppeteer');
 const logger = require('../../utils/logger');
 const { ScrapeError } = require('../../utils/errorHandler');
+const { _replaceParams } = require('./utils');
 
 const isEq = n1 => n2 => n1 === n2;
 const isSameJob = url1 => url2 => isEq(jobId(url1))(jobId(url2));
@@ -147,6 +148,7 @@ class StackOverflow {
         await page.waitFor(100);
         jobinfo.location = link.location;
         jobinfo.joinDate = link.date;
+        jobinfo.href = link.href;
         jobinfo.src = 'SO';
         arrayOfJobs.push(jobinfo);
         await page.waitFor(250);
@@ -178,13 +180,16 @@ class StackOverflow {
     for (const link of jobLinks) {
       const _jobId = url => url.split('/').reduce((a,c,i,s) => c === 'jobs' ? s[i+1] : a);
       const url = await link.href;
+      const newUrl = _replaceParams(url, ['pg', 'offset', 'so', 'total', 'so_medium', 'a']).replace(/\?/, '')
       const location = link.location;
       const date = link.date;
       const SOID = _jobId(url);
 
+      // console.log(newUrl)
+
       const o = {
         location,
-        href: url,
+        href: newUrl,
         date: this._parseDate(date),
         SOID,
       }
@@ -220,7 +225,8 @@ class StackOverflow {
     const salary = salaryElement && salaryElement.offsetParent.className === 'container' ? salaryElement.textContent : null;
     const title = document.querySelector('.fs-headline1').innerText.split('(m/\./\.)')[0];
     const logo = document.querySelector('.s-avatar.s-avatar__lg img')['src'];
-    const href = url
+    const href = url;
+    // const href = _replaceParams(originalUrl, ['so', 'pg', 'offset', 'total', 'so_medium'])
     // const SOID = _jobId(href);
 
     // const companyEl = document.querySelector('.-life-at-company h2');
@@ -231,7 +237,7 @@ class StackOverflow {
     return {
       title,
       // SOID,
-      href,
+      // href,
       applyLink,
       stack: techStack,
       description,

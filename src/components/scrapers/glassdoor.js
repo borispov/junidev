@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const botLogger = require('../../utils/botLogger');
 const { ScrapeError } = require('../../utils/errorHandler');
-const { _query, keywords, _getText, _getTitle, _getStack, _getDescText } = require('./utils');
+const { _replaceParams, _query, keywords, _getText, _getTitle, _getStack, _getDescText } = require('./utils');
 
 const baseURL = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Junior&locT=&locId=0&locKeyword=&jobType=all&fromAge=14&minSalary=0&includeNoSalaryJobs=true&radius=25&cityId=-1&minRating=0.0&industryId=-1&sgocId=7&seniorityType=entrylevel&companyId=-1&employerSizes=0&applicationType=0&remoteWorkType=0`
 
@@ -72,7 +72,6 @@ class Glassdoor {
       await browser.close();
       console.log('FINISHED, received number of jobs: ', jobs.length)
 
-      console.log(jobs[2]);
       return jobs;
     } catch(e) {
       const err = new ScrapeError(e.msg, 'Scraper Error:', 'Error Inside getJobs()', true);
@@ -125,6 +124,10 @@ class Glassdoor {
 
       link.src = 'gd'
 
+      link.href = _replaceParams(link.href, ['pos', 'guid', 'cs', 'cb'])
+      console.log('gd href::: ')
+      console.log(link.href + '\n')
+
       const jobObject = {
         ...link,
         description,
@@ -136,6 +139,7 @@ class Glassdoor {
 
     return arrayOfJobs;
     } catch(e) {
+        console.log(e)
         const err = new ScrapeError(e.msg, 'Scraper Error:', 'Error Inside extractJobs()', true);
         return err;
     }

@@ -3,12 +3,11 @@ const Schema = mongoose.Schema;
 const uniqueValidator = require('mongoose-unique-validator');
 
 const CounterSchema = new Schema({
-  _id: {type: String, required: true, unique: true},
+  id: {type: String, required: true, unique: true},
   seq: { type: Number, default: 0 }
-}, { _id: false })
+}, { id: false })
 
 const counter = mongoose.model('counter', CounterSchema)
-
 
 const JobSchema = new Schema({
 
@@ -50,44 +49,20 @@ const JobSchema = new Schema({
 
 });
 
-JobSchema.plugin(uniqueValidator);
-
-const TestSchema = new Schema({
-  arr: [String]
-});
-
-const Counter = mongoose.model('counter', CounterSchema)
-
-const JobModel = mongoose.model('Job', JobSchema);
-
-const TestM = mongoose.model('test', TestSchema);
-
-JobSchema.pre('save', true, function(next, done) {
+JobSchema.pre('save', async function(next) {
   const doc = this;
-
-  const mbj = JobModel.findOne({ href: doc.href }, (err, res) => {
-    if (err || res) {
-      const err = new Error(err || 'exists!')
-      next(err);
-    }
-    next();
-  })
-
   if (doc.isNew) {
-    counter.findOneAndUpdate({ _id: 'jobs' }, {$inc: {seq: 1}}, function(err, counter) {
+    counter.findOneAndUpdate({ id: 'jobs' }, {$inc: {seq: 1}}, function(err, counter) {
       if (err) return next(err)
-      console.log(counter.seq);
+      console.log('From model.presave:: \nJob Number: ' + counter.seq + ' Has Been Added.');
       doc.jobID = counter.seq;
       next();
     })
-  } else {
-    next();
   }
+
 })
 
-module.exports = {
-  JobModel,
-  TestM
-}
+JobSchema.plugin(uniqueValidator);
 
-// module.exports.JobModel = mongoose.model('Job', JobSchema);
+module.exports.JobModel = mongoose.model('Job', JobSchema);
+

@@ -48,7 +48,6 @@ class JobService {
   getGlassdoorJobs = async () => {
     logger.info(`FROM JOB_SERVICE:: Activating __Glassdoor__ robot`);
     const jobs = await glassdoor.getJobs();
-
     console.log('my jobs: ', jobs.length);
     return await this.addJobsToDB(jobs);
   }
@@ -56,15 +55,12 @@ class JobService {
   getIndeedJobs = async () => {
     logger.info(`FROM JOB_SERVICE:: Activating __Indeed__ robot`);
     const jobs = await indeed.getJobs();
-
     console.log('my jobs: ', jobs.length);
     return await this.addJobsToDB(jobs);
   }
 
   getStackOverflowJobs = async () => {
     logger.info(`FROM JOB_SERVICE :: Activating __Stackoverflow__ robot`);
-
-    console.log('hello from stackoverflow worker');
     const jobs = await stackOverflow.getJobs();
     logger.info(`  Sending ${jobs.length} parsed data to the DATABASE  `);
     return await this.addJobsToDB(jobs)
@@ -76,20 +72,25 @@ class JobService {
 
 module.exports = JobService;
 
+// WHEN CALLED AS A SCRIPT
+// NOT PART OF THE API FLOW
+
 if (require.main === module) {
 
   (async () => {
-    const jobService = new JobService();
-    const sequence = (list = []) => {list.map(i => () => new Promise(res => isFunction(i) ? res(i()) : setTimeout(res, i))).reduce((p, n) => p.then(n), Promise.resolve())}
-    const isFunction = fn => fn && {}.toString.call(fn) === '[object Function]';
 
     require('dotenv').config();
-    const workerState = {
-      stackoverflow: { finished: false, running: false},
-      indeed: { finished: false, running: false},
-      glassdoor: { finished: false, running: false}
-    };
+    const jobService = new JobService();
 
+    const sequence = (list = []) => {list.map(i => () => new Promise(res => isFunction(i) ? res(i()) : setTimeout(res, i))).reduce((p, n) => p.then(n), Promise.resolve())}
+
+    const isFunction = fn => fn && {}.toString.call(fn) === '[object Function]';
+
+    const args = process.argv.slice(2);
+    const jobToRun = !args.length && 'all' || args;
+
+
+    // We only need to connect when OUTSIDE the API scope.
     const db = () => 
       mongoose
         .connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -99,15 +100,23 @@ if (require.main === module) {
 
     try {
 
+      if (args.length) {
+        return await sequence([
+          () => db(),
+          1800, () => jobService[jobToRun](),
+          6000, () => mongoose.disconnect()
+        ])
+      }
+
       return await sequence([
         () => db(),
         2250,
         () => jobService.getStackOverflowJobs(),
-        18000,
+        12000,
         () => jobService.getIndeedJobs(),
-        18000,
+        10000,
         () => jobService.getGlassdoorJobs(),
-        18000,
+        15000,
         () => mongoose.disconnect()
       ])
 

@@ -13,7 +13,11 @@
     "webpack:watch": "npx webpack --watch",
     "cpu:profile": "node --prof-process isolate-0xnnnnnnnnnnnn-v8.log > processed.txt",
     "test": "find ./src -name '*.test.js' | xargs mocha -R spec --timeout 10000",
-    "build": "NODE_ENV=production npm run css:build"
+    "build": "NODE_ENV=production npm run css:build",
+    "scrape:all": "node src/components/jobs/jobs.service.js",
+    "scrape:indeed": "node src/components/jobs/jobs.service.js getIndeedJobs",
+    "scrape:so": "node src/components/jobs/jobs.service.js getStackOverflowJobs",
+    "scrape:gd": "node src/components/jobs/jobs.service.js getGlassdoorJobs"
   },
   "keywords": [],
   "author": "Boris Povolotsky <boristofu@gmail.com>",

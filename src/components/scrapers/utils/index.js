@@ -32,7 +32,17 @@ const _getText = async (page, sel, prop) => {
 
 const _query = el => sel => prop => el.querySelector(sel)[prop];
 
+const _replaceParams = (url, arrayOfParams) => (
+  arrayOfParams.reduce((modifiedUrl, param) => {
+    let currentUrl = modifiedUrl || url;
+    let pattern = new RegExp('\\b('+param+'=).*?(&|#|$)');
+    return currentUrl.replace(pattern, '');
+  }, '')
+)
+
+
 module.exports = {
+  _replaceParams,
   _query,
   keywords,
   _getStack,
