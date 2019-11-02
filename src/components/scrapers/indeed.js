@@ -1,9 +1,11 @@
 const puppeteer = require('puppeteer');
 const logger = require('../../utils/logger');
 const { ScrapeError } = require('../../utils/errorHandler');
-const { _query, keywords, _getText, _getTitle, _getStack, _getDescText } = require('./utils');
+const { _query, keywords, _getText, _getTitle, _getStack, _getDescText, _getCategory } = require('./utils');
 
-const baseURL = `https://www.indeed.com/jobs?as_and=Junior+Developer&as_phr=Junior&as_any=&as_not=&as_ttl=&as_cmp=&jt=all&st=&as_src=&salary=&radius=25&l=&fromage=any&limit=10&sort=date&psf=advsrch`
+// const baseURL = `https://www.indeed.com/jobs?as_and=Junior+Developer&as_phr=Junior&as_any=&as_not=&as_ttl=&as_cmp=&jt=all&st=&as_src=&salary=&radius=25&l=&fromage=any&limit=10&sort=date&psf=advsrch`
+
+const baseURL = `https://www.indeed.com/jobs?as_and=Junior+Software+Engineer&as_phr=&as_any=Web+Development+Software+Engineering+Software+Design&as_not=Manager+Business+Officer+Loan+Electrical+electronic+call%25center&as_ttl=Junior&as_cmp=&jt=all&st=&as_src=&salary=&radius=25&l=&fromage=15&limit=50&sort=date&psf=advsrch&from=advancedsearch`
 
 const selectors = {
   desc: '.jobsearch-JobComponent-description',
@@ -120,7 +122,9 @@ class Indeed {
       const location = await _getText(page, '#vjs-loc');
       const company = await _getText(page, '#vjs-cn');
       const title = await _getText(page, '#vjs-jobtitle');
-      const stack = await _getStack(description);
+      const stackShare = await _getStack(description);
+      const enhancedStack = await _getCategory(description);
+      const stack = stackShare.push(enhancedStack);
       const sel = '.view-apply-button'
       const applyText = await _getText(page, sel);
       const applyLink = applyText === 'Apply Now' ? href : await _getText(page, sel, 'href');
@@ -130,6 +134,10 @@ class Indeed {
         href, title, src, description, company, location, stack, applyLink, joinDate: date
       })
     }
+
+
+    // filter some titles.!
+    // const fLinks = links.filter(obj => forbiddenKeywords.includes(obj.title))
 
     return [links, true];
   }
