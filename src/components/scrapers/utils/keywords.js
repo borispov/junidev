@@ -56,4 +56,68 @@ const languages = [
   Keyword("kotlin")
 ];
 
-module.exports = spaFrameworks.concat(languages).concat(databases);
+
+const industries = {
+  dataScience: [
+    Keyword("data science"),
+    Keyword("data driven"),
+    Keyword("event data"),
+    Keyword("Math", /\bMath|Mathematics\b/i),
+  ],
+  finance: [
+    Keyword("finance"),
+    Keyword("fintech"),
+    Keyword("d")
+  ],
+  crypto: [
+    Keyword("crypto", /crypto|cryptocurrency/i),
+    Keyword("etherium"),
+    Keyword("blockchain"),
+    Keyword("bitcoin"),
+  ],
+  frontend: [
+    Keyword("front-end", /\bfront-end|front end\b/i),
+    Keyword("UX/UI", /\bUX\/UI|UI\/UX\b/i),
+    Keyword("Animations"),
+    Keyword("Design"),
+    Keyword("SPA", /\bSPA|Single Page Application\b/i),
+    Keyword("CSS"),
+    Keyword("HTML"),
+    Keyword("javascript"),
+    Keyword("React", /\bReact|Vue|Angular\b/i),
+    Keyword("svelte")
+  ],
+  backend: [
+    Keyword("Kubernetes"),
+    Keyword(".NET"),
+    Keyword("microservices"),
+    Keyword("django"),
+    Keyword("server side", /\bserver side|server-side\b/i),
+    Keyword("back-end", /\bback-end|backend\b/i),
+    Keyword("AWS"),
+    Keyword("EC2"),
+    Keyword("Rails"),
+    Keyword("Ruby"),
+    Keyword("nodejs", /\bnode|nodejs|node-js\b/i),
+    Keyword("Golang", /\bGolang|Go-lang\b/i),
+    Keyword("Elixir"),
+    Keyword("Clojure"),
+    Keyword("Java"),
+    Keyword("C#")
+  ],
+  gamedev: [
+    Keyword("cpp", /\bcpp|c\+\+\b/i),
+    Keyword("lua"),
+    Keyword("gamedev", /\bgamedev|game-dev|game dev\b/i),
+    Keyword("gaming"),
+    Keyword("Unity"),
+    Keyword("3d engine"),
+  ]
+}
+
+const stackShare = spaFrameworks.concat(languages).concat(databases);
+
+module.exports = {
+  stackShare,
+  industries
+}

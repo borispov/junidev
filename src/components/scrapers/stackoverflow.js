@@ -2,16 +2,36 @@ const fs = require('fs');
 const puppeteer = require('puppeteer');
 const logger = require('../../utils/logger');
 const { ScrapeError } = require('../../utils/errorHandler');
-const { _replaceParams } = require('./utils');
+const { settings, _replaceParams, _getCategory } = require('./utils');
 
-const isEq = n1 => n2 => n1 === n2;
-const isSameJob = url1 => url2 => isEq(jobId(url1))(jobId(url2));
 const cc = a => (...arrs) => a.concat(...arrs);
+
+const europe= [
+  'Sweden',
+  'Finland',
+  'Estonia',
+  'Germany',
+  'Denmark',
+  'Netherlands',
+  'Italy',
+  'Spain',
+  'UK',
+  'Israel',
+  'France',
+]
+
+const america = [
+  'Mexico',
+  'US',
+  'Canada'
+]
+
+
+
 
 /*
  * Stackoverflow class.
  *  PRIVATE METHODS :
- *
  *  _getURL(location, stack) - > compose the url
  *  _getJobInfo(page) -> get job's text content
  *  _getLinks(page) -> grab all job-links in a given page
@@ -23,12 +43,12 @@ const cc = a => (...arrs) => a.concat(...arrs);
  *
 */
 
-const defaultURL = `https://stackoverflow.com/jobs?q=Junior&ms=Junior&mxs=Junior`
+const defaultURL = `https://www.stackoverflow.com/jobs?q=Junior&ms=Student&mxs=MidLevel`
 
 class StackOverflow {
-  constructor(data) {
-    this.data = data || []
-    this._isDupURL = this._isDupURL.bind(this);
+  constructor(location = '', data) {
+    this.data = data || [];
+    this.location = location;
     this.getJobs = this.getJobs.bind(this);
     this._getLinks = this._getLinks.bind(this);
     this._getURL = this._getURL.bind(this);
@@ -38,7 +58,6 @@ class StackOverflow {
 
 
   // need to export out COMMON functionaity for other robots.
-  _isDupURL = list => url => list.reduce((a,c) => isSameJob(c)(url) ? true : a, false)
 
   _isHours = str => str.replace(/\d/g,"") === 'h'
 
@@ -55,49 +74,53 @@ class StackOverflow {
 
 
 
-  getJobs = async (location = '', stack = '', data) => {
+  getJobs = async (location = '', data) => {
     this.data = data || [];
-    logger.info("getJobs -- stackoverflow", location, stack);
-    const browser = await puppeteer.launch({
-      defaultViewport: {
-        width: 1920,
-        height: 1280
-      },
-      headless: true,
-      ignoreHTTPSErrors: true,
-      devtools: true,
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-infobars",
-        "--window-position=0,0",
-        "--ignore-certifcate-errors",
-        "--ignore-certifcate-errors-spki-list",
-        "--user-agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'"
-      ]
-    });
+    this.location = location;
+    logger.info("getJobs -- stackoverflow", location);
+    const browser = await puppeteer.launch(settings);
     const preloadFile = fs.readFileSync(__dirname + '/utils/preload.js', 'utf8');
+
     const page = await browser.newPage();
     await page.evaluateOnNewDocument(preloadFile);
     await page.setExtraHTTPHeaders({ 'Accept-Language': 'en' });
     await page.setRequestInterception(true);
 
     page.on("request", r => {
-      if ( ["image", "stylesheet", "font", "script"].indexOf(r.resourceType()) !== -1 ) {
-        r.abort();
-      } else {
-        r.continue();
-      }
+      if ( ["image", "stylesheet", "font", "script"].indexOf(r.resourceType()) !== -1 ) { r.abort() } else { r.continue()}
     });
 
     try {
-      this.searchURL = this._getURL(location, stack);
-      await page.goto(this.searchURL);
-      logger.info(`Worker Visited: ${this._getURL(location, stack)}`)
-      const jobs = await this._extractResults(page);
-      await browser.close();
-      console.log('scraped this many jobs: ', jobs.length);
-      return jobs;
+      if (this.location) {
+        console.log('received location: ', this.location);
+        const links = this._searchLinks(this.location);
+        const alljobs = [];
+        for (const link of links) {
+          console.log(link)
+          await page.goto(link);
+          const jobsData = await this._extractResults(page);
+          await page.waitFor(250); // hold on for 200 sec 
+          jobsData.length && alljobs.push(jobsData);
+          await page.waitFor(150); // hold on for 200 sec 
+          console.log('current total jobs: ', alljobs.length)
+        }
+        const flattenJobs = [].concat.apply([], alljobs);
+        await browser.close();
+        console.log('scraped this many jobs: ', alljobs.length);
+        return flattenJobs;
+      }
+
+      console.log('no location received: ', this.location)
+      if (!this.location) return;
+
+      // this.searchURL = this._getURL(this.location);
+      // await page.goto(this.searchURL);
+      // logger.info(`Worker Visited: ${this._getURL(this.location)}`)
+      // const jobs = await this._extractResults(page);
+      // console.log(jobs)
+      // await browser.close();
+      // console.log('scraped this many jobs: ', jobs.length);
+      // return jobs;
     }
     catch(err) {
       // logger.error(err.stack);
@@ -117,12 +140,12 @@ class StackOverflow {
 
 
     //get Page 2 Links
-    await page.goto(this._getPage(2));
-    const jobLinksPageTwo = await this._getLinks(page);
-
-
-    await page.goto(this._getPage(3));
-    const jobLinksPageThree = await this._getLinks(page);
+    // await page.goto(this._getPage(2));
+    // const jobLinksPageTwo = await this._getLinks(page);
+    //
+    //
+    // await page.goto(this._getPage(3));
+    // const jobLinksPageThree = await this._getLinks(page);
 
     function noDups(arr, comp) {
       if (new Set(arr).siez === arr.length) {
@@ -135,7 +158,9 @@ class StackOverflow {
        return unique;
     }
 
-    const jobLinks = cc([])(jobLinksPageOne, jobLinksPageTwo, jobLinksPageThree);
+    // const jobLinks = cc([])(jobLinksPageOne, jobLinksPageTwo, jobLinksPageThree);
+    const jobLinks = jobLinksPageOne;
+    if ( !jobLinks.length ) return [];
     const filteredLinks = noDups(jobLinks, 'href');
 
     let arrayOfJobs = [];
@@ -154,17 +179,26 @@ class StackOverflow {
         await page.waitFor(250);
       }
       catch(err) {
-        logger.info(err.msg);
+        logger.info(err);
         return new ScrapeError(err.msg, '', 'INSIDE StackOverflow Scraper: extractResults function ', true);
       }
     }
+    console.log('Filtering Out Senior Jobs . . .');
+    const juniorJobs = arrayOfJobs.filter(job => !job.title.match(/\bsenior|experienced\b/i))
+    console.log(`
+      ${juniorJobs.length - arrayOfJobs.length} jobs were filtered
+    `)
     console.log('Extraction Finished... ', arrayOfJobs.length)
-    return arrayOfJobs;
+    return juniorJobs;
   }
 
 
   _getLinks = async (page) => {
     const selector = ".-job-summary";
+    if ( await page.$(selector) === null ) {
+      console.log('no results found,\nReturning []');
+      return []
+    }
     await page.waitFor(selector);
     const links = [];
     const self = this;
@@ -184,8 +218,6 @@ class StackOverflow {
       const location = link.location;
       const date = link.date;
       const SOID = _jobId(url);
-
-      // console.log(newUrl)
 
       const o = {
         location,
@@ -219,6 +251,8 @@ class StackOverflow {
           .map(el => el.textContent)
 
     const description = subheadings.find(el => el.textContent === 'Job description').parentElement.lastElementChild.innerHTML;
+    // const category = _getCategory(description);
+    // const stack = techStack.push(category);
     const aboutElement = document.querySelector('.-about-company .description');
     const about = aboutElement && aboutElement.innerHTML;
     const salaryElement = document.querySelector('.-salary');
@@ -226,7 +260,6 @@ class StackOverflow {
     const title = document.querySelector('.fs-headline1').innerText.split('(m/\./\.)')[0];
     const logo = document.querySelector('.s-avatar.s-avatar__lg img')['src'];
     const href = url;
-    // const href = _replaceParams(originalUrl, ['so', 'pg', 'offset', 'total', 'so_medium'])
     // const SOID = _jobId(href);
 
     // const companyEl = document.querySelector('.-life-at-company h2');
@@ -236,8 +269,6 @@ class StackOverflow {
 
     return {
       title,
-      // SOID,
-      // href,
       applyLink,
       stack: techStack,
       description,
@@ -250,8 +281,21 @@ class StackOverflow {
 
   _getPage = n => this.searchURL + `&sort=i&pg=${n}`;
 
-  _getURL = (location, stack) => {
-    return `${defaultURL}${location && ( typeof location === 'string' ? location : location.join('+') )}${stack && ( typeof stack === 'string' ? stack : stack.join('+') )}`
+  _getURL = (location) => {
+    return `${defaultURL}${location && ( typeof location === 'string' ? `&l=${location}` : location.join('+') )}`
+  }
+
+  _searchLinks = location => {
+    switch(location) {
+      case 'europe':
+        return europe.map(this._getURL);
+        break;
+      case 'america':
+        return america.map(this._getURL);
+        break;
+      default:
+        return this._getURL(location);
+    }
   }
 
 }

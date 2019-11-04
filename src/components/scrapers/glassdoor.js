@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const botLogger = require('../../utils/botLogger');
 const { ScrapeError } = require('../../utils/errorHandler');
-const { _replaceParams, _query, keywords, _getText, _getTitle, _getStack, _getDescText } = require('./utils');
+const { _replaceParams, _query, keywords, _getText, _getTitle, _getStack, _getDescText, _getCategory } = require('./utils');
 
 const baseURL = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Junior&locT=&locId=0&locKeyword=&jobType=all&fromAge=14&minSalary=0&includeNoSalaryJobs=true&radius=25&cityId=-1&minRating=0.0&industryId=-1&sgocId=7&seniorityType=entrylevel&companyId=-1&employerSizes=0&applicationType=0&remoteWorkType=0`
 
@@ -123,8 +123,11 @@ class Glassdoor {
       }, selectors)
 
       link.src = 'gd'
-
       link.href = _replaceParams(link.href, ['pos', 'guid', 'cs', 'cb'])
+      const tech = _getStack(description);
+      const categ = _getCategory(description); 
+      link.stack = tech.concat(categ)
+
       console.log('gd href::: ')
       console.log(link.href + '\n')
 

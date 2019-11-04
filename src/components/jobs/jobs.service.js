@@ -59,9 +59,9 @@ class JobService {
     return await this.addJobsToDB(jobs);
   }
 
-  getStackOverflowJobs = async () => {
+  getStackOverflowJobs = async (loc) => {
     logger.info(`FROM JOB_SERVICE :: Activating __Stackoverflow__ robot`);
-    const jobs = await stackOverflow.getJobs();
+    const jobs = await stackOverflow.getJobs(loc);
     logger.info(`  Sending ${jobs.length} parsed data to the DATABASE  `);
     return await this.addJobsToDB(jobs)
   };
@@ -88,7 +88,7 @@ if (require.main === module) {
 
     const args = process.argv.slice(2);
     const jobToRun = !args.length && 'all' || args;
-
+    const jobLoc = args[1] && args[1].replace(/-/g,'');
 
     // We only need to connect when OUTSIDE the API scope.
     const db = () => 
@@ -103,7 +103,7 @@ if (require.main === module) {
       if (args.length) {
         return await sequence([
           () => db(),
-          1800, () => jobService[jobToRun](),
+          1800, () => jobService[jobToRun[0]](jobLoc),
           6000, () => mongoose.disconnect()
         ])
       }

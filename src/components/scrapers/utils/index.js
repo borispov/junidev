@@ -1,10 +1,67 @@
 const puppeteer = require('puppeteer');
-const keywords = require('./keywords');
+
+const { stackShare, industries } = require('./keywords');
+const settings = require('./settings');
 
 const _getStack = text => {
-   return keywords
+   return stackShare
     .filter(keyword => keyword.regex.test(text))
     .map(keyword => keyword.name);
+}
+
+const req= {
+  backend: [
+    'AWS', 
+    'EC2', 
+    'Kubernetes', 
+    'Docker', 
+    'Linux', 
+    'CI/CD', 'Ruby', 
+    'Python', 'Golang', 
+    'Nodejs', 'Elixir', 
+    'Clojure', 'Haskell', 
+    'Scala', 'Java', 
+    'C#', '.NET', 
+    'Kotlin', 'microservices', 
+    'server-side', 'back-end', 
+    'django', 'rails'],
+  frontend: [
+    'SPA', 'Animation', 'Ajax', 'UI', 'UX',
+    'Elm', 'svelte', 'React', 'Angular', 
+    'Vue', 'JavaScript', 'CSS', 'HTML',
+    'frontend', 'front-end', 'single page app'],
+  cyber: [
+    'Cyber', 'cyberjs', 'security', 'privacy', 'attacks',
+  ]
+}
+
+const _reduceStack = arr => {
+  const stack = arr.map(s => s.toLowerCase());
+  if (stack.length < 4) return stack
+  const front = req.frontend.map(c => c.toLowerCase()).filter(s => stack.includes(s)).length;
+  const back = req.backend.map(c => c.toLowerCase()).filter(s => stack.includes(s)).length;
+  if ( front <= 2 || back <= 2 ) return stack
+  return front > back
+    ? stack.concat(front)
+    : stack.concat(back)
+}
+
+const _getCategory = text => {
+  const categories = Object.keys(industries);
+  const values = Object.values(industries);
+  const mapped = values.map((keygroup, index) => ({
+      name: categories[index],
+      match: keygroup.filter(keyword => keyword.regex.test(text)).length
+  }))
+  const multiple = mapped.filter(a => a.match > 2).map(a => a.name);
+  if (multiple.includes('backend') && multiple.includes('frontend')) {
+    return 'WEB'
+  }
+  const reduced = mapped.reduce((init, it) => it.match > init.match ? it : init, { name: 'none', match: 0 })
+  if ( reduced.name == 'none' || reduced.match < 2) {
+    return ''
+  }
+  return reduced.name
 }
 
 // if job posting is from indeed's, it'll return the original href page as the job link
@@ -44,11 +101,13 @@ const _replaceParams = (url, arrayOfParams) => (
 module.exports = {
   _replaceParams,
   _query,
-  keywords,
   _getStack,
   _getApplyLink,
   _getTitle,
   _getDescText,
-  _getText
+  _getText,
+  _getCategory,
+  _reduceStack,
+  settings
 }
 
