@@ -45,9 +45,9 @@ class JobService {
 
   _notifyUsers = () => "SomeMethodOfNotifications_here";
 
-  getGlassdoorJobs = async () => {
+  getGlassdoorJobs = async loc => {
     logger.info(`FROM JOB_SERVICE:: Activating __Glassdoor__ robot`);
-    const jobs = await glassdoor.getJobs();
+    const jobs = await glassdoor.getJobs(loc);
     console.log('my jobs: ', jobs.length);
     return await this.addJobsToDB(jobs);
   }
@@ -59,7 +59,7 @@ class JobService {
     return await this.addJobsToDB(jobs);
   }
 
-  getStackOverflowJobs = async (loc) => {
+  getStackOverflowJobs = async loc => {
     logger.info(`FROM JOB_SERVICE :: Activating __Stackoverflow__ robot`);
     const jobs = await stackOverflow.getJobs(loc);
     logger.info(`  Sending ${jobs.length} parsed data to the DATABASE  `);
@@ -99,6 +99,9 @@ if (require.main === module) {
 
 
     try {
+
+      console.log('Job Location as per received from script: \n', jobLoc);
+      console.log('Whole arguments are:\n', args)
 
       if (args.length) {
         return await sequence([

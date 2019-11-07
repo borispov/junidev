@@ -1,12 +1,14 @@
 const settings = {
   defaultViewport: {
     width: 1920,
-    height: 1280
+    height: 1080
   },
   headless: true,
+  // executablePath: '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome',
   ignoreHTTPSErrors: true,
   devtools: true,
   args: [
+    "--incognito",
     "--no-sandbox",
     "--disable-setuid-sandbox",
     "--disable-infobars",
