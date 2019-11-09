@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "npm run css:watch && NODE_ENV=development npx nodemon server.js",
+    "start": "npm run css:watch && npx nodemon server.js",
     "prod": "NODE_ENV=production node server.js",
     "css:watch": "postcss src/public/css/tailwind.css -o src/public/css/style.css",
     "css:build": "cross-env NODE_ENV=production postcss src/public/css/main.css -o src/public/css/style.css",

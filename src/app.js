@@ -33,7 +33,10 @@ app.engine('.hbs', exphbs({
 }));
 app.set('view engine', '.hbs');
 
-app.enable('view cache');
+
+if (process.env.NODE_ENV === 'production') {
+  app.enable('view cache');
+}
 app.enable('trust proxy');
 app.disable('x-powered-by');
 
