@@ -10,19 +10,9 @@ const addJob = async (job) => {
       const newjob = await new JobModel(job).save();
       return newjob
     }
-
     console.log('Potential Duplicate. Abort')
     return null
 
-    // const mbJob = JobModel.findOne({ href: job.href }, async (err, doc) => {
-    //   if (err) return err
-    //   if (doc === null) {
-    //     setTimeout( async () => await new JobModel(job).save(), 100)
-    //     return
-    //   }
-    //   console.log('JOB Already Exists');
-    //   return null;
-    // })
   } catch(err) {
     console.log('error occured . . .\n Possibly duplicate job..', err);
     // logger.debug("ERROR SAVING DOC TO DB", err)
@@ -62,6 +52,14 @@ const getJob = async query => {
 
 const getJobByLink = async href => await JobModel.findOne({ href: href });
 
+const queryJobs = async query => {
+  const q = query.split(' ')
+  const parsedQ = q.length > 1
+    ? q.split(' ').map(k => ['"'].concat(k, '"').join('')).join(' ')
+    : query
+  console.log('query: ', q);
+  return await JobModel.find({ $text: { $search: parsedQ }}, { score: {$meta: "textScore"} });
+}
 
 module.exports.JobDAL = {
   addJob,
@@ -69,5 +67,6 @@ module.exports.JobDAL = {
   deleteJob,
   deleteAll,
   getJob,
-  getJobs
+  getJobs,
+  queryJobs
 }

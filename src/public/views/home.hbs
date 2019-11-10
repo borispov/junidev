@@ -17,11 +17,20 @@
 
         <div class="flex flex-col">
 
+          <form action="/jobs/search/" method="GET" class="search__form">
+            {{#if searchMessage}}
+            <h2 class="font-semibold text-base italic text-red-400 text-shadow text-center p-2">
+              {{ searchMessage }}
+            </h2>
+            {{/if}}
+            <div class="mx-auto w-1/2">
+              <input name='q' type='text' class="search__bar text-gray-700 text-center bg-indigo-200 py-2 pr-2 border-l w-full m-auto rounded opacity-75" placeholder="Search">
+              <span class="">Search</span>
+            </div>
+          </form>
           {{#if jobs}}
-          <div class="mx-auto w-1/2">
-            <input class="text-gray-700 text-center bg-indigo-200 py-2 pr-2 border-l w-full m-auto rounded opacity-75" placeholder="Search">
-            <span class="">Search</span>
-          </div>
+
+
           {{#each jobs}}
 
           {{>jobcard}}

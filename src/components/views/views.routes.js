@@ -9,4 +9,6 @@ Router.get('/job/:id', viewsController.renderJob);
 
 Router.get('/job/:id/apply', viewsController.applyJob);
 
+Router.get('/jobs/search', viewsController.searchJobs);
+
 module.exports = Router;

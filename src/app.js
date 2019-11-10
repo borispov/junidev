@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const logger = require('./utils/logger');
@@ -23,6 +24,8 @@ process.on('unhandledRejection', (error, promise) => {
   console.log(' Oh Lord! We forgot to handle a promise rejection here: ', promise);
   logger.info('Unhandled Promise', error);
 });
+
+app.use(helmet());
 
 app.use(express.static(path.join(__dirname, 'public' )));
 app.set('views', path.join(__dirname, 'public', 'views'));

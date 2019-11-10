@@ -27,6 +27,10 @@ class JobService {
 
   getJobs = async () => await JobDAL.getJobs();
 
+  queryJobs = async ( query ) => {
+    return await JobDAL.queryJobs(query)
+  }
+
   addJobToDB = async (data) => await JobDAL.addJob(data);
 
   addJobsToDB = async (jobs) => {

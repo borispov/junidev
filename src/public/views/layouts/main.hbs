@@ -4,9 +4,20 @@
 
   <meta charset="UTF-8">
   <meta charset="utf-8">
-  <title>Junior Developer Jobs in Web Development, Software, Data Science and more </title>
-  <meta name="description" content="{{description}}">
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-150966572-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-150966572-1');
+  </script>
+
+  <title>{{metaTags.title}}</title>
+  <meta name="description" content="{{metaTags.description}}">
   <meta name="author" content="Boris Povolotsky">
+  <meta name="keywords" content="{{metaTags.keywords}}"
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -24,5 +35,7 @@
   {{> footer}}
 
 </body>
+
+  <script src="/js/main.js"></script>
 
 </html>
