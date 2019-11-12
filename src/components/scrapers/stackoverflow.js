@@ -111,16 +111,16 @@ class StackOverflow {
       }
 
       console.log('no location received: ', this.location)
-      if (!this.location) return;
+      // if (!this.location) return;
 
-      // this.searchURL = this._getURL(this.location);
-      // await page.goto(this.searchURL);
-      // logger.info(`Worker Visited: ${this._getURL(this.location)}`)
-      // const jobs = await this._extractResults(page);
-      // console.log(jobs)
-      // await browser.close();
-      // console.log('scraped this many jobs: ', jobs.length);
-      // return jobs;
+      this.searchURL = this._getURL(this.location);
+      await page.goto(this.searchURL);
+      logger.info(`Worker Visited: ${this._getURL(this.location)}`)
+      const jobs = await this._extractResults(page);
+      console.log(jobs)
+      await browser.close();
+      console.log('scraped this many jobs: ', jobs.length);
+      return jobs;
     }
     catch(err) {
       // logger.error(err.stack);

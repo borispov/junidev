@@ -11,6 +11,7 @@ const defURL = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Junior&locT=N&
 
 const europe = {
   US: '1',
+  Canada: '3',
   Denmark: '63',
   Germany: '96',
   Israel: '119',
