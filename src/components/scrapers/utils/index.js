@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 
 const { stackShare, industries } = require('./keywords');
 const settings = require('./settings');
+const filterTitles = require('./filterTitles');
 
 const _getStack = text => {
    return stackShare
@@ -108,6 +109,7 @@ module.exports = {
   _getText,
   _getCategory,
   _reduceStack,
-  settings
+  settings,
+  filterTitles
 }
 

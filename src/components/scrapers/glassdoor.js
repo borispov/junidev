@@ -8,6 +8,17 @@ const baseURL = `https://www.glassdoor.com/Job/jobs.htm?suggestCount=0&suggestCh
 
 const defURL = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Junior&locT=N&locKeyword=Sweden&jobType=all&fromAge=-1&minSalary=0&includeNoSalaryJobs=true&radius=25&cityId=-1&minRating=0.0&industryId=1059&sgocId=-1&seniorityType=all&`
 
+const america = ['1', '3']
+
+const europe_ids = [
+  '63',
+  '96',
+  '119',
+  '120',
+  '178',
+  '219',
+  '223'
+]
 
 const europe = {
   US: '1',
@@ -42,7 +53,7 @@ class Glassdoor {
     this.urls = urls || [];
   }
 
-  _getUrl = (loc) => loc ? `${defURL}locId=${europe[loc]}` : `${baseURL}locId=0`
+  _getUrl = loc => loc ? `${defURL}locId=${loc}` : `${baseURL}locId=0`
 
   getJobs = async (location) => {
 
@@ -60,11 +71,28 @@ class Glassdoor {
       } else { r.continue() }});
 
     try {
-      const loc = this.location;
-      await page.goto(this._getUrl(loc));
-      console.log(
-        this._getUrl(loc)
-      )
+      if (this.location) {
+        const links = this._searchLinks(this.location);
+        const alljobs = [];
+        for (const link of links) {
+          await page.goto(link);
+          console.log('Entering a link: \n', link)
+          const jobsData = await this._extractJobs(page);
+          await page.waitFor(200);
+          jobsData.length && alljobs.push(jobsData);
+          console.log(`Data added to array.`)
+          console.log('---- -----  ---- -----  ---- -----  ---- -----  ---- -----  ')
+        }
+        const flattenJobs = [].concat.apply([], alljobs);
+        await page.waitFor(150)
+        await browser.close();
+        return flattenJobs;
+      }
+
+      console.log('NO LOCATION PROVIDED.')
+
+      // if no country specified. search globally (i.e locId=0)
+      await page.goto(this._getUrl(this.location));
       const jobs = await this._extractJobs(page);
       await page.close();
       await browser.close();
@@ -97,14 +125,14 @@ class Glassdoor {
       return data;
     }, selectors)
 
-    await page.waitFor(651);
+    await page.waitFor(151);
 
     const arrayOfJobs = [];
     for (const link of jbs) {
 
       await page.waitFor(153);
       await page.goto(link.href, { waitUntil: 'domcontentloaded' });
-      await page.waitFor(350);
+      await page.waitFor(150);
       await page.waitFor(selectors.desc);
 
       const [description, logo] = await page.evaluate(sels => {
@@ -139,6 +167,20 @@ class Glassdoor {
 
 
   }
+
+  _searchLinks = location => {
+    switch(location) {
+      case 'europe':
+        return europe_ids.map(this._getUrl);
+        break;
+      case 'america':
+        return america.map(this._getUrL);
+        break;
+      default:
+        return this._getUrl();
+    }
+  }
+
 }
 
 module.exports = Glassdoor;

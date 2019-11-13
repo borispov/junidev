@@ -2,7 +2,7 @@ const fs = require('fs');
 const puppeteer = require('puppeteer');
 const logger = require('../../utils/logger');
 const { ScrapeError } = require('../../utils/errorHandler');
-const { settings, _replaceParams, _getCategory } = require('./utils');
+const { settings, filterTitles, _replaceParams, _getCategory } = require('./utils');
 
 const cc = a => (...arrs) => a.concat(...arrs);
 
@@ -25,8 +25,6 @@ const america = [
   'US',
   'Canada'
 ]
-
-
 
 
 /*
@@ -117,10 +115,16 @@ class StackOverflow {
       await page.goto(this.searchURL);
       logger.info(`Worker Visited: ${this._getURL(this.location)}`)
       const jobs = await this._extractResults(page);
-      console.log(jobs)
       await browser.close();
       console.log('scraped this many jobs: ', jobs.length);
-      return jobs;
+      console.log(`Operating a cleanup. Filtering out senior jobs by title . . .`)
+      console.log(`. . . .`)
+      console.log(`. . . . . . `)
+      const noSenior = jobs.filter(job => !job.title.test(/\bsenior|lead|experienced\b/i))
+      console.log(`${jobs.length - noSenior.length} jobs were removed after filtering.`);
+      console.log(`. . . . . . `)
+      console.log(`. . . . . . `)
+      return noSenior;
     }
     catch(err) {
       // logger.error(err.stack);

@@ -93,6 +93,7 @@ if (require.main === module) {
     const jobService = new JobService();
     const isFunction = fn => fn && {}.toString.call(fn) === '[object Function]';
     const sequence = (list = []) => { list.map(i => () =>new Promise (res =>isFunction(i) ? res(i()) : setTimeout(res, i))).reduce((p, n) => p.then(n), Promise.resolve())}
+
     const defaultScheme = async expanded => {
       let conn = [() => db(), 1800];
       let disc = [6000, () => dbOut()]
@@ -110,29 +111,21 @@ if (require.main === module) {
       ])
     }
 
-
-    const multipleCountries = c => async (service = '') => {
-      console.log('Running on multiple')
-      const seq = {
-        getStackOverflowJobs: [() => jobService.getStackOverflowJobs(c), 10000],
-        getGlassdoorJobs: [].concat(...c.map(each => [() => jobService.getGlassdoorJobs(each), 22000]))
-      }
-
-      return service
-        ? await defaultScheme(seq[service])
-        : await defaultScheme(seq.getStackOverflowJobs.concat(seq.getGlassdoorJobs))
-    }
-
     const singleCountry = c => async (service='') => {
-      console.log('Running on single')
+      logger.info('Running a Single Service Job');
+      console.log('Running on single');
+      // if (service) return await defaultScheme([ () => jobService[service](c) ])
       if (service) {
-        return await defaultScheme([
-          () => jobService[service](c)
+        return await sequence([
+          () => db(), 1800,
+          () => jobService[service](c), 4800,
+          () => dbOut()
         ])
-      }
+      } 
+
       return await defaultScheme([
-        () => jobService[getStackOverflowJobs](c),
-        11500, () => jobService[getGlassdoorJobs](c)
+        () => jobService.getStackOverflowJobs(c),
+        11500, () => jobService.getGlassdoorJobs(c)
       ])
     }
 
@@ -142,9 +135,9 @@ if (require.main === module) {
     const jobToRun = args.length && isService(args[0]) && args[0]
     const jobLoc = (!jobToRun && args.length && args ) ||
       args.length == 2 
-      && args[1].replace(/-/g,'')
+      && args[1]
       || args.length > 2 
-      && args.slice(1).map(e => e.replace(/-/g,''))
+      && args.slice(1)
       || !jobToRun && args.length && args
 
     // We only need to connect when OUTSIDE the API scope.
@@ -152,20 +145,27 @@ if (require.main === module) {
       mongoose
         .connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
         .then(() => console.log("MONGODB: Connected From JobService."))
-        .catch(e => console.log("MONGODB: FAILED \n", e.msg));
+        .catch(e => {throw new Error(e)});
 
     const dbOut = () => mongoose.disconnect();
 
     try {
 
       if (jobToRun && !jobLoc) return await defaultScheme([() => jobService[jobToRun]()])
+
       return jobToRun && jobLoc
-        ? typeof jobLoc == 'string' 
-            ? await singleCountry(jobLoc)(jobToRun)
-            : await multipleCountries(jobLoc)(jobToRun)
+        ? await singleCountry(jobLoc)(jobToRun)
         : jobLoc
-            ? await singleCountry(jobLoc)
-            : await runAll()
+          ? await singleCountry(jobLoc)()
+          : await runAll()
+
+      // return jobToRun && jobLoc
+      //   ? typeof jobLoc == 'string'
+      //       ? await singleCountry(jobLoc)(jobToRun)
+      //       : await multipleCountries(jobLoc)(jobToRun)
+      //   : jobLoc
+      //       ? await singleCountry(jobLoc)()
+      //       : await runAll()
 
     } catch(e) {
       logger.log('Error', e)

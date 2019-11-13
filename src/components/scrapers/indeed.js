@@ -48,10 +48,12 @@ class Indeed {
       await page.goto(this._getURL());
       const jobs = await this._extractJobs(page);
       // Job Done, close everything & get the hell out!
+      const noSenior = jobs.filter(job => !job.title.test(/\bsenior|lead|experienced\b/i))
       await page.close();
       await browser.close();
       console.log('FINISHED, received number of jobs: ', jobs.length)
-      return jobs;
+      return noSenior;
+      // return jobs;
     } catch(e) {
       logger.info(e);
       return e;
