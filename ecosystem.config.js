@@ -2,12 +2,12 @@ module.exports = {
   apps: [
     {
       name: "junidev-1",
-      script: "./server.js",
-      instances: 'max',
+      script: "npm run prod",
+      instances: 2,
       increment_var: "PORT",
       env: {
         "PORT": 3000,
-        "NODE_ENV": "development"
+        "NODE_ENV": "production"
       },
       env_development: {
         "PORT": "3000",
