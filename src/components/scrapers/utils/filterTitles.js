@@ -1,6 +1,3 @@
-module.exports = titles => (
-  titles
-    .filter(title => !title
-        .split(' ')
-        .test(/\bSenior|senior\b/i))
-)
+const defaultReg = new RegExp(/\bsenior|lead|experienced\b/i);
+
+module.exports = (title, reg) => reg ? !reg.test(title) : !defaultReg.test(title)

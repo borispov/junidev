@@ -120,7 +120,7 @@ class StackOverflow {
       console.log(`Operating a cleanup. Filtering out senior jobs by title . . .`)
       console.log(`. . . .`)
       console.log(`. . . . . . `)
-      const noSenior = jobs.filter(job => !job.title.test(/\bsenior|lead|experienced\b/i))
+      const noSenior = jobs.filter(filterTitles)
       console.log(`${jobs.length - noSenior.length} jobs were removed after filtering.`);
       console.log(`. . . . . . `)
       console.log(`. . . . . . `)

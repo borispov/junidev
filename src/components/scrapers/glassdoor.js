@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const botLogger = require('../../utils/botLogger');
 const { ScrapeError } = require('../../utils/errorHandler');
-const { _replaceParams, settings, _query, keywords, _getText, _getTitle, _getStack, _getDescText, _getCategory } = require('./utils');
+const { filterTitles, _replaceParams, settings, _query, keywords, _getText, _getTitle, _getStack, _getDescText, _getCategory } = require('./utils');
 
 const baseURL = `https://www.glassdoor.com/Job/jobs.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&sc.keyword=Junior&locT=&locKeyword=&jobType=all&fromAge=14&minSalary=0&includeNoSalaryJobs=true&radius=25&cityId=-1&minRating=0.0&industryId=-1&sgocId=7&seniorityType=entrylevel&companyId=-1&employerSizes=0&applicationType=0&jobType=&`
 
@@ -11,13 +11,13 @@ const defURL = `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=Junior&locT=N&
 const america = ['1', '3']
 
 const europe_ids = [
-  '63',
-  '96',
+  // '63',
+  // '96',
   '119',
-  '120',
+  // '120',
   '178',
-  '219',
-  '223'
+  // '219',
+  // '223'
 ]
 
 const europe = {
@@ -71,6 +71,8 @@ class Glassdoor {
       } else { r.continue() }});
 
     try {
+      const reg = new RegExp(/\bsenior|lead|experienced\b/i);
+      const filterSeniorPositions = j => !reg.test(j.title)
       if (this.location) {
         const links = this._searchLinks(this.location);
         const alljobs = [];
@@ -78,14 +80,20 @@ class Glassdoor {
           await page.goto(link);
           console.log('Entering a link: \n', link)
           const jobsData = await this._extractJobs(page);
+          console.log(jobsData.joinDate)
           await page.waitFor(200);
           jobsData.length && alljobs.push(jobsData);
           console.log(`Data added to array.`)
           console.log('---- -----  ---- -----  ---- -----  ---- -----  ---- -----  ')
         }
         const flattenJobs = [].concat.apply([], alljobs);
-        await page.waitFor(150)
+        const noSenior = flattenJobs.filter(filterTitles);
+        await page.close();
         await browser.close();
+        console.log(`
+          had ${flattenJobs.length} jobs
+          // now got: ${noSenior.length}
+        `)
         return flattenJobs;
       }
 
@@ -94,9 +102,10 @@ class Glassdoor {
       // if no country specified. search globally (i.e locId=0)
       await page.goto(this._getUrl(this.location));
       const jobs = await this._extractJobs(page);
+      const noSenior = jobs.filter(filterSeniorPositions)
       await page.close();
       await browser.close();
-      return jobs;
+      return noSenior;
     } catch(e) {
       const err = new ScrapeError(e.msg, 'Scraper Error:', 'Error Inside getJobs()', true);
       return err;
@@ -143,6 +152,9 @@ class Glassdoor {
         return [description, logo];
       }, selectors)
 
+      console.log('date is: ', link.date)
+
+      link.joinDate = this._parseDate(link.date);
       link.src = 'gd'
       link.href = _replaceParams(link.href, ['pos', 'guid', 'cs', 'cb'])
       const tech = _getStack(description);
@@ -165,7 +177,20 @@ class Glassdoor {
         return err;
     }
 
+  }
 
+  _parseDate = d => {
+    const currentDate = new Date();
+    let format = d.split(/\d/).slice(-1)[0];
+    let thenum = d.replace(/\D/g, "");
+    let isHours = format === 'hr' ? true : false;
+    let isOld = !isHours && thenum > 21
+
+    return isHours
+      ? currentDate
+      : thenum < 21 
+        ? new Date(currentDate.setDate(currentDate.getDate() - thenum))
+        : null
   }
 
   _searchLinks = location => {
@@ -174,13 +199,15 @@ class Glassdoor {
         return europe_ids.map(this._getUrl);
         break;
       case 'america':
-        return america.map(this._getUrL);
+        return america.map(this._getUrl);
         break;
       default:
-        return this._getUrl();
+        return this._getUrl(location);
     }
   }
 
 }
+
+
 
 module.exports = Glassdoor;

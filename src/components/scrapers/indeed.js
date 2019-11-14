@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const logger = require('../../utils/logger');
 const { ScrapeError } = require('../../utils/errorHandler');
-const { _query, keywords, _getText, _getTitle, _getStack, _getDescText, _getCategory } = require('./utils');
+const { filterTitles, _query, keywords, _getText, _getTitle, _getStack, _getDescText, _getCategory } = require('./utils');
 
 // const baseURL = `https://www.indeed.com/jobs?as_and=Junior+Developer&as_phr=Junior&as_any=&as_not=&as_ttl=&as_cmp=&jt=all&st=&as_src=&salary=&radius=25&l=&fromage=any&limit=10&sort=date&psf=advsrch`
 
@@ -48,7 +48,7 @@ class Indeed {
       await page.goto(this._getURL());
       const jobs = await this._extractJobs(page);
       // Job Done, close everything & get the hell out!
-      const noSenior = jobs.filter(job => !job.title.test(/\bsenior|lead|experienced\b/i))
+      const noSenior = jobs.filter(filterTitles)
       await page.close();
       await browser.close();
       console.log('FINISHED, received number of jobs: ', jobs.length)
