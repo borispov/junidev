@@ -27,7 +27,8 @@
 
     console.log('insiddee')
 
-    const url = `http://localhost:3000/jobs/search/?q=${searchValue.value}`;
+    const url = `https://junidev.com/jobs/search/?q=${searchValue.value}`;
+    console.log(url);
     window.location.replace(url)
     return;
     const Http = new XMLHttpRequest();

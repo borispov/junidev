@@ -155,6 +155,7 @@ class Glassdoor {
       console.log('date is: ', link.date)
 
       link.joinDate = this._parseDate(link.date);
+      if (link.joinDate === null) return null
       link.src = 'gd'
       link.href = _replaceParams(link.href, ['pos', 'guid', 'cs', 'cb'])
       const tech = _getStack(description);

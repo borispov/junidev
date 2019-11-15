@@ -58,7 +58,7 @@ const queryJobs = async query => {
     ? q.split(' ').map(k => ['"'].concat(k, '"').join('')).join(' ')
     : query
   console.log('query: ', q);
-  return await JobModel.find({ $text: { $search: parsedQ }}, { score: {$meta: "textScore"} });
+  return await JobModel.find({ $text: { $search: parsedQ }}, { score: {$meta: "textScore"} }).sort({ joinDate: -1 });
 }
 
 module.exports.JobDAL = {
